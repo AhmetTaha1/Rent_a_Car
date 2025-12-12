@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color:#000;">
+    <div class="container-fluid px-4">
+        <!-- Logo (clickable, goes to Home/Index) -->
+        <a asp-controller="Home" asp-action="Index" class="navbar-brand text-white d-flex align-items-center">
+            <i class="fas fa-car-side me-2"></i>
+            <span>Royal Rent</span>
+        </a>
+
+        <!-- Hamburger menu (for mobile) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu items -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto mt-2">
+                <!-- Home -->
+                <li class="nav-item me-4">
+                    <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+
+                <!-- About Us -->
+                <li class="nav-item me-4">
+                    <a class="nav-link text-white" asp-controller="Home" asp-action="About">About Us</a>
+                </li>
+
+                @if (Context.Session.GetString("UserId") == null)
+                {
+                    <!-- Sign In -->
+                    <li class="nav-item me-4">
+                        <a class="nav-link text-white" asp-controller="Account" asp-action="Login">Sign In</a>
+                    </li>
+                    <!-- Sign Up -->
+                    <li class="nav-item me-4">
+                        <a class="nav-link text-white" asp-controller="Account" asp-action="Register">Sign Up</a>
+                    </li>
+                }
+                else
+                {
+                    @if (Context.Session.GetString("IsAdmin") == "true")
+                    {
+                        <li class="nav-item me-4">
+                            <a class="btn bg-warning text-dark fw-bold" asp-controller="Admin" asp-action="Dashboard">Admin</a>
+                        </li>
+                    }
+                    <li class="nav-item me-4">
+                        <span class="nav-link text-white">@Context.Session.GetString("FullName")</span>
+                    </li>
+                    <li class="nav-item me-4">
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                            <button type="submit" class="btn bg-warning text-dark fw-bold ms-2">Sign Out</button>
+                        </form>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>

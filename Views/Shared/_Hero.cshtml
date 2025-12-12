@@ -1,0 +1,120 @@
+
+<section class="hero-section d-flex align-items-center position-relative" style="
+    background-image: url('img/guncel.webp');
+    background-size: cover;
+    background-position: center;
+    height: 90vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    background-attachment: fixed;
+">
+    <!-- Overlay -->
+    <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.1);
+        z-index: 1;
+    "></div>
+
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center">
+            <!-- Left: Animated Text -->
+            <div class="col-md-6">
+                <h1 style="font-weight: 700; font-size: 3.2rem; color: #ffffff; white-space: nowrap;">
+                    <span id="typed-text"></span>
+                </h1>
+                <p style="font-size: 1.6rem; margin-top: 1.5rem; color: #ffffff;">
+                    Find your perfect ride with Royal Rent.
+                </p>
+            </div>
+
+            <!-- Right: Form -->
+           <div class="col-md-5 offset-md-1">
+    <div class="card p-4"
+        style="background-color: rgba(255, 255, 255, 0.08); border: none; border-radius: 12px;">
+        <h4 class="mb-3 text-center text-white">Find Your Car</h4>
+        <form method="get" asp-controller="Cars" asp-action="List" id="carSearchForm">
+            <!-- Bootstrap Icons -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+            <div class="mb-3">
+                <label for="pickupDate" class="form-label text-white">Pick-up Date</label>
+                <div class="position-relative">
+                    <input type="date" class="form-control pe-5 text-white" id="pickupDate" name="pickupDate" required />
+                    <i class="bi bi-calendar-date-fill position-absolute top-50 end-0 translate-middle-y me-3 text-dark"
+                       style="cursor: pointer;" onclick="document.getElementById('pickupDate').showPicker && document.getElementById('pickupDate').showPicker(); document.getElementById('pickupDate').focus();"></i>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="dropoffDate" class="form-label text-white">Drop-off Date</label>
+                <div class="position-relative">
+                    <input type="date" class="form-control pe-5 text-white" id="dropoffDate" name="dropoffDate" required />
+                    <i class="bi bi-calendar-date-fill position-absolute top-50 end-0 translate-middle-y me-3 text-dark"
+                       style="cursor: pointer;" onclick="document.getElementById('dropoffDate').showPicker && document.getElementById('dropoffDate').showPicker(); document.getElementById('dropoffDate').focus();"></i>
+                </div>
+            </div>
+
+                        <div class="mb-3">
+                            <label for="carType" class="form-label text-white">Car Type</label>
+                            <select class="form-select text-white" id="carType" name="category">
+                                <option class="text-white bg-dark" value="">All</option>
+                                <option class="text-white bg-dark" value="Economy">Economy</option>
+                                <option class="text-white bg-dark" value="Standard">Standard</option>
+                                <option class="text-white bg-dark" value="Luxury">Luxury</option>
+                                <option class="text-white bg-dark" value="SUV">SUV</option>
+                                <option class="text-white bg-dark" value="Convertible">Convertible</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 border border-white">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Typed.js -->
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script>
+        var typed = new Typed('#typed-text', {
+            strings: [
+                'Fast and Easy Rentals.',
+                'Drive Your Dream Car.',
+                'No Hidden Fees.',
+                'Always On Time.'
+            ],
+            typeSpeed: 45,
+            backSpeed: 25,
+            loop: true,
+            showCursor: true,
+            cursorChar: '|',
+        });
+
+        // Form validation: Tarihler zorunlu
+        document.getElementById('carSearchForm').addEventListener('submit', function(e) {
+            var pickup = document.getElementById('pickupDate').value;
+            var dropoff = document.getElementById('dropoffDate').value;
+            if (!pickup || !dropoff) {
+                alert('Lütfen hem teslim alma hem de bırakma tarihi seçiniz.');
+                e.preventDefault();
+            }
+        });
+    </script>
+
+    <style>
+        .typed-cursor {
+            font-size: 3.2rem;
+            color: #ffffff;
+        }
+
+        #typed-text {
+            display: inline-block;
+            white-space: nowrap;
+            color: #ffffff;
+        }
+    </style>
+</section>

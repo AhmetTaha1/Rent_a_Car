@@ -1,0 +1,59 @@
+@model List<rent_a_car.Models.User>
+@{
+    ViewData["Title"] = "Kullanıcı Listesi";
+}
+<div class="container mt-5">
+    <h2>Kullanıcılar</h2>
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Is Admin?</th>
+                <th>Process</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.FullName</td>
+                    <td>@user.Username</td>
+                    <td>@(user.IsAdmin ? "Yes" : "No")</td>
+                    <td>
+                        @if (!user.IsAdmin)
+                        {
+                            <form asp-action="MakeAdmin" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit" class="btn btn-sm btn-success">Make Admin </button>
+                            </form>
+                        }
+                        else
+                        {
+                            if (user.Id == 1)
+                            {
+                                <span class="text-success">Fixed Admin</span>
+                            }
+                            else
+                            {
+                                if (Context.Session.GetString("UserId") == "1")
+                                {
+                                    <form asp-action="RemoveAdmin" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Adminlikten Çıkar</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-success">Admin</span>
+                                }
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div> 

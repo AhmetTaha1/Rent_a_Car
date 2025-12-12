@@ -1,0 +1,42 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = ViewData["Title"] ?? "About Us";
+}
+
+<section class="py-5">
+    <div class="container">
+        <div class="card shadow border-0 overflow-hidden">
+            <div class="row g-0 align-items-stretch" style="min-height: 400px;"> <!-- Daha kısa yükseklik -->
+
+                <!-- Sol: Görsel -->
+                <div class="col-md-6">
+                    <div style="height: 100%; width: 100%;">
+                        <img src="~/img/R.jpeg" alt="About Royal Rent" class="img-fluid w-100 h-100"
+                            style="object-fit: cover; object-position: center;" />
+                    </div>
+                </div>
+
+                <!-- Sağ: Metin -->
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="px-4 py-3 w-100"> <!-- Padding azaltıldı -->
+                        <h2 class="mb-3 fs-3 fw-bold">@ViewData["Title"]</h2> <!-- Başlık boyutu küçüldü -->
+                        <p class="fs-6">
+                            At <strong>Royal Rent</strong>, we aim to redefine your car rental experience by
+                            offering top-quality vehicles, personalized support, and unbeatable rates.
+                        </p>
+                        <p class="fs-6">
+                            From economy to luxury vehicles, we cater to all travel needs with 24/7 support and
+                            seamless booking experience. Customer satisfaction and transparency are our top priorities.
+                        </p>
+                        <p class="fs-6">
+                            @ViewData["Message"]
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@await Html.PartialAsync("_Contact")
