@@ -1,0 +1,377 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\css\\style.css",
+      "PackagePath": "staticwebassets\\css\\style.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\320i-56645.webp",
+      "PackagePath": "staticwebassets\\img\\320i-56645.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\572bf2ab-1c56-4734-a676-807904880af4.jpg",
+      "PackagePath": "staticwebassets\\img\\572bf2ab-1c56-4734-a676-807904880af4.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\R.jpeg",
+      "PackagePath": "staticwebassets\\img\\R.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\a8c18c36-61fe-4b33-933c-d0874cb5d7ec.jpeg",
+      "PackagePath": "staticwebassets\\img\\a8c18c36-61fe-4b33-933c-d0874cb5d7ec.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\astra-54407.webp",
+      "PackagePath": "staticwebassets\\img\\astra-54407.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\audi-a3.jpeg",
+      "PackagePath": "staticwebassets\\img\\audi-a3.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\audi-a4.webp",
+      "PackagePath": "staticwebassets\\img\\audi-a4.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\bayon.webp",
+      "PackagePath": "staticwebassets\\img\\bayon.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\bf98cabf-a480-4aad-863a-e7792ca08d6b.jpeg",
+      "PackagePath": "staticwebassets\\img\\bf98cabf-a480-4aad-863a-e7792ca08d6b.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\clio2024-55893.webp",
+      "PackagePath": "staticwebassets\\img\\clio2024-55893.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\contact.jpeg",
+      "PackagePath": "staticwebassets\\img\\contact.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\corolla.jpeg",
+      "PackagePath": "staticwebassets\\img\\corolla.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\cx4-54453.webp",
+      "PackagePath": "staticwebassets\\img\\cx4-54453.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\d1647df0-6a9e-47eb-8b9a-58aeb34e2a5c.jpeg",
+      "PackagePath": "staticwebassets\\img\\d1647df0-6a9e-47eb-8b9a-58aeb34e2a5c.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\guncel.webp",
+      "PackagePath": "staticwebassets\\img\\guncel.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\i10.jpeg",
+      "PackagePath": "staticwebassets\\img\\i10.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\megane-sedan-54397.webp",
+      "PackagePath": "staticwebassets\\img\\megane-sedan-54397.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\mercedes-c-200-48693.webp",
+      "PackagePath": "staticwebassets\\img\\mercedes-c-200-48693.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\mustang.jpeg",
+      "PackagePath": "staticwebassets\\img\\mustang.jpeg"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\nissanleaf.webp",
+      "PackagePath": "staticwebassets\\img\\nissanleaf.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\nwqash-64376.webp",
+      "PackagePath": "staticwebassets\\img\\nwqash-64376.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\opel-corsa-54390.webp",
+      "PackagePath": "staticwebassets\\img\\opel-corsa-54390.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\taycan.webp",
+      "PackagePath": "staticwebassets\\img\\taycan.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\teslamodel3.webp",
+      "PackagePath": "staticwebassets\\img\\teslamodel3.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\img\\xc40-48199.webp",
+      "PackagePath": "staticwebassets\\img\\xc40-48199.webp"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\js\\script.js",
+      "PackagePath": "staticwebassets\\js\\script.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\LICENSE",
+      "PackagePath": "staticwebassets\\lib\\bootstrap"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery-validation-unobtrusive\\dist\\jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\dist\\jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery-validation-unobtrusive\\dist\\jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\dist\\jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery\\dist\\jquery.slim.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery\\dist\\jquery.slim.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.js"
+    },
+    {
+      "Id": "C:\\Users\\ahmet\\Desktop\\rent-a-car\\wwwroot\\lib\\jquery\\dist\\jquery.slim.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.slim.min.map"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.build.rent-a-car.props",
+      "PackagePath": "build\\rent-a-car.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildMultiTargeting.rent-a-car.props",
+      "PackagePath": "buildMultiTargeting\\rent-a-car.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildTransitive.rent-a-car.props",
+      "PackagePath": "buildTransitive\\rent-a-car.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.rent-a-car.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.rent-a-car.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

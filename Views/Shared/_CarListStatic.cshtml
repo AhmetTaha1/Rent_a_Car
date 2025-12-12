@@ -1,0 +1,51 @@
+<!-- Car Fleet Grid Section -->
+@{
+    var carNames = new Dictionary<string, string> {
+        {"320i-56645.webp", "BMW 320i"},
+        {"astra-54407.webp", "Opel Astra"},
+        {"audi-a4.webp", "Audi A4"},
+        {"bayon.webp", "Hyundai Bayon"},
+        {"clio2024-55893.webp", "Renault Clio 2024"},
+        {"corolla.jpeg", "Toyota Corolla"},
+        {"cx4-54453.webp", "Mazda CX-4"},
+        {"i10.jpeg", "Hyundai i10"},
+        {"megane-sedan-54397.webp", "Renault Megane Sedan"},
+        {"mercedes-c-200-48693.webp", "Mercedes C 200"},
+        {"nissanleaf.webp", "Nissan Leaf"},
+        {"nwqash-64376.webp", "Nissan Qashqai"},
+        {"opel-corsa-54390.webp", "Opel Corsa"},
+        {"taycan.webp", "Porsche Taycan"},
+        {"teslamodel3.webp", "Tesla Model 3"},
+        {"xc40-48199.webp", "Volvo XC40"}
+    };
+    var imgList = new[] {
+        "320i-56645.webp", "astra-54407.webp", "audi-a4.webp", "bayon.webp", "clio2024-55893.webp", "corolla.jpeg", "cx4-54453.webp","i10.jpeg", "megane-sedan-54397.webp", "mercedes-c-200-48693.webp", "nissanleaf.webp", "nwqash-64376.webp", "opel-corsa-54390.webp", "taycan.webp", "teslamodel3.webp", "xc40-48199.webp"
+    };
+}
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4 text-center">Our Car Fleet</h2>
+        <div class="row g-4 justify-content-center">
+            @foreach (var img in imgList) {
+                var name = carNames.ContainsKey(img) ? carNames[img] : System.IO.Path.GetFileNameWithoutExtension(img);
+            <div class="col-lg-3 col-md-4 col-sm-6 col-12 d-flex align-items-stretch">
+                <div class="position-relative w-100" style="overflow:hidden; border-radius:16px;">
+                    <img src="/img/@img" alt="@name" class="w-100" style="height:200px; object-fit:cover; border-radius:16px; transition:filter 0.2s;" />
+                    <div class="fleet-hover-name position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background:rgba(0,0,0,0.55); color:#fff; font-size:1.3rem; font-weight:600; opacity:0; transition:opacity 0.2s; border-radius:16px;">
+                        @name
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+    .position-relative:hover .fleet-hover-name {
+        opacity: 1 !important;
+    }
+    .position-relative:hover img {
+        filter: blur(2px) brightness(0.7);
+    }
+</style>

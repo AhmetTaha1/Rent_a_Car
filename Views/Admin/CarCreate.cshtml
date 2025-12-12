@@ -1,0 +1,76 @@
+@model rent_a_car.Models.Car
+@{
+    ViewData["Title"] = "Add New Car";
+}
+
+<h2 class="mb-4 text-center mt-5">Add New Car</h2>
+<form asp-action="CarCreate" asp-controller="Admin" method="post" enctype="multipart/form-data" class="form-container">
+    <div class="mb-3">
+        <label asp-for="Model" class="form-label admin-form">Model</label>
+        <input asp-for="Model" class="form-control" required />
+        <span asp-validation-for="Model" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Category" class="form-label admin-form">Category</label>
+        <select asp-for="Category" class="form-select" required>
+            <option value="">Select Category</option>
+            <option>Economy</option>
+            <option>Standard</option>
+            <option>Luxury</option>
+            <option>SUV</option>
+            <option>Convertible</option>
+        </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label admin-form">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label admin-form">Photo</label>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" required />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="PricePerDay" class="form-label admin-form">Price Per Day</label>
+        <input asp-for="PricePerDay" class="form-control" required />
+        <span asp-validation-for="PricePerDay" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transmission" class="form-label admin-form">Transmission</label>
+        <select asp-for="Transmission" class="form-select">
+            <option value="">Select Transmission</option>
+            <option>Automatic</option>
+            <option>Manual</option>
+        </select>
+        <span asp-validation-for="Transmission" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Engine" class="form-label admin-form">Engine</label>
+        <input asp-for="Engine" class="form-control" />
+        <span asp-validation-for="Engine" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="FuelType" class="form-label admin-form">Fuel Type</label>
+        <select asp-for="FuelType" class="form-select" required>
+            <option value="">Select Fuel Type</option>
+            <option>Petrol</option>
+            <option>Diesel</option>
+            <option>Electric</option>
+        </select>
+        <span asp-validation-for="FuelType" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Seats" class="form-label admin-form">Seats</label>
+        <input asp-for="Seats" class="form-control" />
+        <span asp-validation-for="Seats" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

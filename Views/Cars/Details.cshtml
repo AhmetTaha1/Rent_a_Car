@@ -1,0 +1,385 @@
+@model rent_a_car.Models.Car
+@{
+    var similarCars = ViewBag.SimilarCars as List<rent_a_car.Models.Car>;
+    var rating = 4.2;
+    var stock = true;
+
+    var today = DateTime.Today;
+    var selectedMonth = today.Month;
+    var selectedYear = today.Year;
+
+    var months = Enumerable.Range(1, 12)
+    .Select(m => new DateTime(selectedYear, m, 1))
+    .ToList();
+
+    var reservedRanges = new List<(DateTime Start, DateTime End)>
+{
+(new DateTime(2025, 7, 3), new DateTime(2025, 7, 7)),
+(new DateTime(2025, 7, 15), new DateTime(2025, 7, 16))
+};
+}
+
+<section class="py-5 bg-light min-vh-100">
+    <div class="container">
+        <!-- Car Details -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <div class="row g-4 align-items-center bg-white rounded-4 shadow p-4">
+                    <div class="col-md-5 text-center">
+                        <img src="@Model.ImageUrl" alt="@Model.Model" class="img-fluid rounded-3 border border-1"
+                            style="object-fit:contain; width:100%; max-width:400px; height:320px;" />
+                    </div>
+                    <div class="col-md-7">
+                        <h2 class="fw-bold mb-2">@Model.Model</h2>
+                        <div class="mb-2">
+                            <span class="text-warning">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Floor(rating))
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    else if (i - rating < 1)
+                                    {
+                                        <i class="fas fa-star-half-alt"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star"></i>
+                                    }
+                                }
+                            </span>
+                            <span class="ms-2 text-dark fw-semibold">@rating.ToString("0.0")</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="@(stock ? "text-success" : "text-danger") fw-semibold">
+                                @(stock ? "In Stock" : "Out of Stock")
+                            </span>
+                        </div>
+                        <div class="mb-3 fs-3 fw-bold text-success">$@Model.PricePerDay <span
+                                class="fs-6 text-muted">/day</span></div>
+                        <div class="mb-3">
+                            <span class="badge bg-primary me-2">@Model.Category</span>
+                            <span class="badge bg-success text-white border">@Model.Transmission </span>
+                        </div>
+                        <p class="text-muted mb-3">@Model.Description</p>
+                        <div class="row g-2 small text-center">
+                            <div class="col-6 col-md-3">
+                                <div class="text-muted">Engine</div>
+                                <div class="fw-semibold">@(Model.Engine ?? "1.6L")</div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="text-muted">Fuel</div>
+                                <div class="fw-semibold">
+                                    @if (Model.FuelType == "Electric") {
+                                        <span>Electric</span>
+                                    } else if (Model.FuelType == "Diesel") {
+                                        <span>Diesel</span>
+                                    } else {
+                                        <span>Petrol</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="text-muted">Seats</div>
+                                <div class="fw-semibold">@(Model.Seats ?? "5")</div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="text-muted">Transmission</div>
+                                <div class="fw-semibold">@(Model.Transmission ?? "Automatic")</div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="#" class="btn btn-success fw-bold shadow-sm" style="padding: 0.35rem 0.5rem; font-size: 1rem; border-radius: 0.5rem; width: 100vw; max-width: 100%;">View Price Offers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dropdown + Alert + Calendar side by side -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-12 col-lg-8">
+                <!-- KALDIRILDI: Card container -->
+            </div>
+        </div>
+
+        <!-- Similar Cars -->
+        @if (similarCars != null && similarCars.Count > 0)
+        {
+            <div class="row justify-content-center mb-2">
+                <div class="col-lg-10">
+                    <h3 class="fw-bold mb-3">Similar Cars</h3>
+                    <div class="row g-4">
+                        @foreach (var car in similarCars)
+                        {
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow" style="cursor: default;">
+                                    <img src="@car.ImageUrl" class="card-img-top" alt="@car.Model"
+                                        style="height: 200px; object-fit: cover;" />
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">@car.Model</h5>
+                                        <p class="text-muted mb-1"><strong>Category:</strong> @car.Category</p>
+                                        <p class="card-text flex-grow-1">@car.Description</p>
+                                        <p class="fw-bold fs-5 mt-2">$@car.PricePerDay/day</p>
+                                    </div>
+                                    <div class="card-footer bg-transparent border-0 text-center">
+                                        <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.Id"
+                                            class="btn btn-outline-primary w-100" style="cursor: pointer;">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<style>
+    .card {
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.18) !important;
+        transform: translateY(-4px) scale(1.03);
+    }
+
+    .calendar-main-card {
+        min-height: 340px;
+        height: 100%;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        background: #fff;
+    }
+
+    .calendar-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(60,72,88,0.08);
+        padding: 24px 18px 18px 18px;
+        max-width: 370px;
+        margin: 0 auto;
+        min-height: 340px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .calendar {
+        width: 100%;
+        max-width: 600px;
+        min-width: 340px;
+        margin: 0 auto;
+        user-select: none;
+    }
+
+    .calendar .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .calendar .calendar-header span {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #198754;
+    }
+
+    .calendar .calendar-weekdays {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+
+    .calendar .calendar-weekdays div {
+        width: 48px;
+        min-width: 48px;
+        text-align: center;
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 1rem;
+        letter-spacing: 0.2px;
+    }
+
+    .calendar-days {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-start;
+    }
+
+    .day-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #f4f6fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 1.08rem;
+        color: #222;
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+        border: 2px solid transparent;
+        position: relative;
+        z-index: 1;
+    }
+
+    .day-box:hover:not(.reserved-day):not(.selected):not(.in-range) {
+        background: #e6f7ea;
+        color: #198754;
+        border-color: #b6e2c6;
+    }
+
+    .day-box.empty-box {
+        background: transparent;
+        cursor: default;
+        border: none;
+        box-shadow: none;
+    }
+
+    .day-box.reserved-day {
+        background: repeating-linear-gradient(135deg, #f8d7da 0 10px, #f5c6cb 10px 20px);
+        color: #b71c1c;
+        cursor: not-allowed;
+        border: 2px solid #f5c6cb;
+        opacity: 0.7;
+    }
+
+    .day-box.selected {
+        background: linear-gradient(135deg, #198754 60%, #43c97f 100%);
+        color: #fff;
+        border: 2px solid #198754;
+        z-index: 2;
+        box-shadow: 0 2px 8px rgba(25,135,84,0.10);
+    }
+
+    .day-box.in-range {
+        background: linear-gradient(135deg, #c6f3d6 60%, #e6f7ea 100%);
+        color: #198754;
+        border: 2px solid #b6e2c6;
+        z-index: 1;
+    }
+
+    @@media (max-width: 900px) {
+        .calendar, .calendar-days { max-width: 98vw; }
+        .day-box, .calendar .calendar-weekdays div { width: 36px; min-width: 36px; height: 36px; font-size: 0.9rem; }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        (() => {
+            const allReservedRanges = [
+                { start: new Date(2025, 6, 3), end: new Date(2025, 6, 7) },
+                { start: new Date(2025, 6, 15), end: new Date(2025, 6, 16) }
+            ];
+            const calendar = document.getElementById('calendar');
+            const monthSelect = document.getElementById('monthSelect');
+            const calendarMonthLabel = document.getElementById('calendarMonthLabel');
+            let startDate = null;
+            let endDate = null;
+            function isDateReserved(date) {
+                return allReservedRanges.some(range => date >= range.start && date <= range.end);
+            }
+            function clearSelection() {
+                startDate = null;
+                endDate = null;
+                document.querySelectorAll('.day-box.selected, .day-box.in-range').forEach(el => {
+                    el.classList.remove('selected', 'in-range');
+                });
+            }
+            function renderCalendar(year, month) {
+                calendar.innerHTML = '';
+                // Header
+                const header = document.createElement('div');
+                header.className = 'calendar-header';
+                header.innerHTML = `<span>${new Date(year, month-1).toLocaleString('en-US', { month: 'long', year: 'numeric' })}</span>`;
+                calendar.appendChild(header);
+                // Weekdays
+                const weekdays = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'];
+                const weekdayRow = document.createElement('div');
+                weekdayRow.className = 'calendar-weekdays';
+                weekdays.forEach(wd => {
+                    const wdBox = document.createElement('div');
+                    wdBox.textContent = wd;
+                    weekdayRow.appendChild(wdBox);
+                });
+                calendar.appendChild(weekdayRow);
+                // Days
+                const firstDay = new Date(year, month-1, 1);
+                const daysInMonth = new Date(year, month, 0).getDate();
+                const emptyBoxesCount = firstDay.getDay();
+                const daysContainer = document.createElement('div');
+                daysContainer.className = 'calendar-days';
+                for (let i = 0; i < emptyBoxesCount; i++) {
+                    const emptyBox = document.createElement('div');
+                    emptyBox.className = 'day-box empty-box';
+                    daysContainer.appendChild(emptyBox);
+                }
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayDate = new Date(year, month-1, day);
+                    const dayBox = document.createElement('div');
+                    dayBox.className = 'day-box';
+                    dayBox.textContent = day;
+                    dayBox.setAttribute('data-date', dayDate.toISOString().split('T')[0]);
+                    if (isDateReserved(dayDate)) {
+                        dayBox.classList.add('reserved-day');
+                        dayBox.style.cursor = 'not-allowed';
+                    }
+                    dayBox.addEventListener('click', () => {
+                        if (dayBox.classList.contains('reserved-day')) return;
+                        if (startDate && !endDate) {
+                            if (dayDate < startDate) {
+                                startDate = dayDate;
+                                endDate = null;
+                            } else if (dayDate.getTime() === startDate.getTime()) {
+                                clearSelection();
+                                return;
+                            } else {
+                                endDate = dayDate;
+                            }
+                        } else {
+                            startDate = dayDate;
+                            endDate = null;
+                        }
+                        updateSelection();
+                    });
+                    daysContainer.appendChild(dayBox);
+                }
+                calendar.appendChild(daysContainer);
+                updateSelection();
+            }
+            function updateSelection() {
+                document.querySelectorAll('.day-box.selected, .day-box.in-range').forEach(el => {
+                    el.classList.remove('selected', 'in-range');
+                });
+                if (!startDate) return;
+                const dayBoxes = document.querySelectorAll('.day-box[data-date]');
+                dayBoxes.forEach(box => {
+                    const boxDate = new Date(box.getAttribute('data-date'));
+                    if (boxDate.getTime() === startDate.getTime()) {
+                        box.classList.add('selected');
+                    } else if (endDate && boxDate > startDate && boxDate < endDate) {
+                        box.classList.add('in-range');
+                    } else if (endDate && boxDate.getTime() === endDate.getTime()) {
+                        box.classList.add('selected');
+                    }
+                });
+            }
+            renderCalendar(@selectedYear, @selectedMonth);
+            monthSelect.addEventListener('change', (e) => {
+                const newMonth = parseInt(e.target.value);
+                renderCalendar(@selectedYear, newMonth);
+            });
+        })();
+    </script>
+}
+
+
