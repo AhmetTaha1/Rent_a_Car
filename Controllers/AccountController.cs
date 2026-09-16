@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using rent_a_car.Models;
+using rent_a_car.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 
 namespace rent_a_car.Controllers;
@@ -16,14 +15,17 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public ActionResult Login()
+    public ActionResult Login(string? returnUrl)
     {
+        ViewBag.ReturnUrl = returnUrl;
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> SignIn()
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SignIn(string? returnUrl)
     {
+        ViewBag.ReturnUrl = returnUrl;
         var email = Request.Form["Email"].ToString();
         var password = Request.Form["Password"].ToString();
 
@@ -39,15 +41,24 @@ public class AccountController : Controller
             ModelState.AddModelError("", "Kullanıcı bulunamadı.");
             return View("Login");
         }
-        if (!VerifyPasswordHash(password, user.PasswordHash))
+        if (!PasswordHasher.Verify(password, user.PasswordHash, out var needsUpgrade))
         {
             ModelState.AddModelError("", "Şifre yanlış.");
             return View("Login");
+        }
+        if (needsUpgrade)
+        {
+            // Transparently migrate legacy unsalted SHA256 hashes to PBKDF2 on next successful login.
+            user.PasswordHash = PasswordHasher.Hash(password);
+            await _context.SaveChangesAsync();
         }
         // Oturum aç
         HttpContext.Session.SetString("UserId", user.Id.ToString());
         HttpContext.Session.SetString("FullName", user.FullName);
         HttpContext.Session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
         return RedirectToAction("Index", "Home");
     }
 
@@ -58,8 +69,19 @@ public class AccountController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> SignUp(string FullName, string Email, string Password, string ConfirmPassword)
     {
+        if (string.IsNullOrWhiteSpace(FullName) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+        {
+            ModelState.AddModelError("", "Tüm alanlar zorunludur.");
+            return View("Register");
+        }
+        if (Password.Length < 6)
+        {
+            ModelState.AddModelError("", "Şifre en az 6 karakter olmalıdır.");
+            return View("Register");
+        }
         if (Password != ConfirmPassword)
         {
             ModelState.AddModelError("", "Passwords do not match.");
@@ -74,7 +96,7 @@ public class AccountController : Controller
         {
             Username = Email,
             FullName = FullName,
-            PasswordHash = HashPassword(Password),
+            PasswordHash = PasswordHasher.Hash(Password),
             IsAdmin = false
         };
         _context.Users.Add(user);
@@ -86,23 +108,7 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    private string HashPassword(string password)
-    {
-        using (var sha256 = SHA256.Create())
-        {
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha256.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
-        }
-    }
-
-    private bool VerifyPasswordHash(string password, string storedHash)
-    {
-        var hashOfInput = HashPassword(password);
-        Console.WriteLine($"Girdi: {password} | Hash: {hashOfInput} | DB Hash: {storedHash}");
-        return hashOfInput == storedHash;
-    }
-
+    [HttpPost]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
