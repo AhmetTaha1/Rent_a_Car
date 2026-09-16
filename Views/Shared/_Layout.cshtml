@@ -13,11 +13,13 @@
     <title>Royal Rent</title>
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     @await Html.PartialAsync("_Navbar")
 
-    @RenderBody()
+    <main class="flex-fill">
+        @RenderBody()
+    </main>
 
     @await Html.PartialAsync("_Footer")
 
