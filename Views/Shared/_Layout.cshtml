@@ -9,6 +9,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="~/css/style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.5/sweetalert2.all.min.js"></script>
     <title>Royal Rent</title>
 </head>
 
@@ -26,13 +27,43 @@
 
     @RenderSection("Scripts", required: false)
 
-    @if (TempData["ShowAdminRemovedPopup"] != null)
+    @{
+        // Site-wide notification pipeline: controllers set TempData["SwalSuccess"/"SwalError"/"SwalInfo"]
+        // (or ViewBag.Error for same-request, no-redirect validation like the Cars/List date check),
+        // and any ModelState errors added via ModelState.AddModelError surface here automatically -
+        // so every page gets consistent SweetAlert2 popups without each view wiring its own alert markup.
+        var modelErrors = ViewData.ModelState?.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).Where(m => !string.IsNullOrEmpty(m)).ToList();
+        var hasModelErrors = modelErrors != null && modelErrors.Count > 0;
+        var hasSwalSuccess = TempData["SwalSuccess"] != null;
+        var hasSwalError = TempData["SwalError"] != null;
+        var hasSwalInfo = TempData["SwalInfo"] != null;
+        var hasViewBagError = ViewBag.Error != null;
+    }
+    @if (hasModelErrors || hasSwalSuccess || hasSwalError || hasSwalInfo || hasViewBagError)
     {
         <script>
-            window.onload = function() {
-                alert("Artık admin değilsiniz. Oturumunuz sonlandırıldı.");
-                window.location.href = "/";
-            }
+            document.addEventListener('DOMContentLoaded', function () {
+                @if (hasSwalSuccess)
+                {
+                    <text>Swal.fire({ icon: 'success', title: 'Success', text: @Html.Raw(Json.Serialize(TempData["SwalSuccess"])), confirmButtonColor: '#198754' });</text>
+                }
+                @if (hasSwalError)
+                {
+                    <text>Swal.fire({ icon: 'error', title: 'Something went wrong', text: @Html.Raw(Json.Serialize(TempData["SwalError"])), confirmButtonColor: '#dc3545' });</text>
+                }
+                @if (hasSwalInfo)
+                {
+                    <text>Swal.fire({ icon: 'info', title: 'Heads up', text: @Html.Raw(Json.Serialize(TempData["SwalInfo"])), confirmButtonColor: '#0d6efd' });</text>
+                }
+                @if (hasViewBagError)
+                {
+                    <text>Swal.fire({ icon: 'warning', title: 'Please check your search', text: @Html.Raw(Json.Serialize(ViewBag.Error)), confirmButtonColor: '#ffc107' });</text>
+                }
+                @if (hasModelErrors)
+                {
+                    <text>Swal.fire({ icon: 'error', title: 'Please check the form', html: @Html.Raw(Json.Serialize(string.Join("<br/>", modelErrors!))), confirmButtonColor: '#dc3545' });</text>
+                }
+            });
         </script>
     }
 
