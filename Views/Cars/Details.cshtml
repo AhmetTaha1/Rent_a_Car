@@ -4,8 +4,18 @@
     var rating = 4.2;
 
     var today = DateTime.Today;
-    var selectedMonth = today.Month;
-    var selectedYear = today.Year;
+    DateTime? parsedPickup = null;
+    if (ViewBag.PickupDate != null)
+    {
+        DateTime pd;
+        if (DateTime.TryParse((string)ViewBag.PickupDate, out pd))
+        {
+            parsedPickup = pd;
+        }
+    }
+    var initialDate = parsedPickup ?? today;
+    var selectedMonth = initialDate.Month;
+    var selectedYear = initialDate.Year;
     var isLoggedIn = Context.Session.GetString("UserId") != null;
 }
 
@@ -100,38 +110,38 @@
                                 </div>
                                 <div id="calendar" class="calendar"></div>
                                 <div class="small text-muted mt-3">
-                                    <span class="d-inline-block me-3"><span class="legend-box reserved-day d-inline-block me-1"></span>Dolu</span>
-                                    <span class="d-inline-block"><span class="legend-box selected d-inline-block me-1"></span>Seçili</span>
+                                    <span class="d-inline-block me-3"><span class="legend-box reserved-day d-inline-block me-1"></span>Booked</span>
+                                    <span class="d-inline-block"><span class="legend-box selected d-inline-block me-1"></span>Selected</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-5">
                         <div class="bg-white rounded-4 shadow p-4 h-100">
-                            <h4 class="fw-bold mb-3">Rezervasyon Yap</h4>
+                            <h4 class="fw-bold mb-3">Book This Car</h4>
                             @if (!isLoggedIn)
                             {
                                 <div class="alert alert-warning">
-                                    Rezervasyon yapabilmek için <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Cars", new { id = Model.Id })">giriş yapmalısınız</a>.
+                                    You need to <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Cars", new { id = Model.Id })">sign in</a> to make a reservation.
                                 </div>
                             }
                             <form asp-controller="Cars" asp-action="Reserve" method="post">
                                 <input type="hidden" name="carId" value="@Model.Id" />
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Teslim Alma</label>
+                                    <label class="form-label fw-semibold">Pick-up</label>
                                     <input type="date" class="form-control" id="pickupInput" name="pickupDate"
                                         value="@ViewBag.PickupDate" required />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Bırakma</label>
+                                    <label class="form-label fw-semibold">Drop-off</label>
                                     <input type="date" class="form-control" id="dropoffInput" name="dropoffDate"
                                         value="@ViewBag.DropoffDate" required />
                                 </div>
                                 <div class="mb-3 fs-5">
-                                    Toplam: <span id="totalPrice" class="fw-bold text-success">-</span>
+                                    Total: <span id="totalPrice" class="fw-bold text-success">-</span>
                                 </div>
                                 <button type="submit" class="btn btn-success fw-bold w-100" @(isLoggedIn ? "" : "disabled")>
-                                    Rezervasyonu Onayla
+                                    Confirm Reservation
                                 </button>
                             </form>
                         </div>
@@ -303,8 +313,8 @@
         (() => {
             const pricePerDay = @Model.PricePerDay.ToString(System.Globalization.CultureInfo.InvariantCulture);
             const reservedRanges = @(Json.Serialize(ViewBag.ReservedRanges)).map(r => ({
-                start: new Date(r.start),
-                end: new Date(r.end)
+                start: new Date(r.start + 'T00:00:00'),
+                end: new Date(r.end + 'T00:00:00')
             }));
             const calendar = document.getElementById('calendar');
             const monthSelect = document.getElementById('monthSelect');
@@ -325,7 +335,14 @@
                 return d;
             }
             function toIso(date) {
-                return date.toISOString().split('T')[0];
+                // Build the date string from local date parts. date.toISOString() converts to
+                // UTC first, which silently shifts the date back a day for any timezone ahead of
+                // UTC (e.g. Turkey, UTC+3) - that's what caused the calendar selection and the
+                // pick-up/drop-off fields to drift apart by a day or two.
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
             }
             function updateInputsAndTotal() {
                 pickupInput.value = startDate ? toIso(startDate) : '';
@@ -333,7 +350,7 @@
                 if (startDate && endDate) {
                     const days = Math.round((endDate - startDate) / 86400000);
                     if (days > 0) {
-                        totalPriceEl.textContent = '$' + (days * pricePerDay).toFixed(2) + ' (' + days + ' gün)';
+                        totalPriceEl.textContent = '$' + (days * pricePerDay).toFixed(2) + ' (' + days + (days === 1 ? ' day)' : ' days)');
                         return;
                     }
                 }
@@ -341,7 +358,7 @@
             }
             function renderCalendar(year, month) {
                 calendar.innerHTML = '';
-                const weekdays = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'];
+                const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
                 const weekdayRow = document.createElement('div');
                 weekdayRow.className = 'calendar-weekdays';
                 weekdays.forEach(wd => {
@@ -379,7 +396,7 @@
                                     startDate = dayDate;
                                     endDate = null;
                                 } else if (hasReservedBetween(startDate, dayDate)) {
-                                    // Aralıkta dolu gün varsa yeniden başlat
+                                    // A booked day falls inside the range - restart the selection
                                     startDate = dayDate;
                                     endDate = null;
                                 } else {

@@ -19,21 +19,15 @@ namespace rent_a_car.Controllers
             return int.TryParse(userIdStr, out var id) ? id : null;
         }
 
-        // İki tarih aralığı çakışıyor mu? Check-out günü, aynı gün başka bir check-in'e izin verir.
-        private static bool RangesOverlap(DateTime existingStart, DateTime existingEnd, DateTime requestedStart, DateTime requestedEnd)
-        {
-            return existingStart < requestedEnd && existingEnd > requestedStart;
-        }
-
         public async Task<IActionResult> List(DateTime? pickupDate, DateTime? dropoffDate, string? category)
         {
-            // Tarihler zorunlu
+            // Dates are required
             if (!pickupDate.HasValue || !dropoffDate.HasValue)
             {
                 ViewBag.PickupDate = pickupDate?.ToString("yyyy-MM-dd");
                 ViewBag.DropoffDate = dropoffDate?.ToString("yyyy-MM-dd");
                 ViewBag.SelectedCategory = category;
-                ViewBag.Error = "Lütfen hem teslim alma hem de bırakma tarihi seçiniz.";
+                ViewBag.Error = "Please select both a pick-up and a drop-off date.";
                 return View(new List<Car>());
             }
 
@@ -42,19 +36,19 @@ namespace rent_a_car.Controllers
                 ViewBag.PickupDate = pickupDate?.ToString("yyyy-MM-dd");
                 ViewBag.DropoffDate = dropoffDate?.ToString("yyyy-MM-dd");
                 ViewBag.SelectedCategory = category;
-                ViewBag.Error = "Bırakma tarihi, teslim alma tarihinden sonra olmalıdır.";
+                ViewBag.Error = "The drop-off date must be after the pick-up date.";
                 return View(new List<Car>());
             }
 
             var cars = await _context.Cars.ToListAsync();
 
-            // Kategori filtrelemesi
+            // Category filter
             if (!string.IsNullOrEmpty(category))
             {
                 cars = cars.Where(c => c.Category.ToLower() == category.ToLower()).ToList();
             }
 
-            // Seçilen tarih aralığında rezerve edilmiş araçları listeden çıkar
+            // Exclude cars already reserved for the requested date range
             var start = pickupDate.Value.Date;
             var end = dropoffDate.Value.Date;
             var overlappingCarIds = await _context.Reservations
@@ -105,7 +99,7 @@ namespace rent_a_car.Controllers
             var userId = CurrentUserId();
             if (userId == null)
             {
-                TempData["ReservationError"] = "Rezervasyon yapabilmek için giriş yapmalısınız.";
+                TempData["ReservationError"] = "You must sign in to make a reservation.";
                 return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Details", "Cars", new { id = carId }) });
             }
 
@@ -118,12 +112,12 @@ namespace rent_a_car.Controllers
 
             if (end <= start)
             {
-                TempData["ReservationError"] = "Bırakma tarihi, teslim alma tarihinden sonra olmalıdır.";
+                TempData["ReservationError"] = "The drop-off date must be after the pick-up date.";
                 return RedirectToAction("Details", new { id = carId });
             }
             if (start < DateTime.Today)
             {
-                TempData["ReservationError"] = "Geçmiş bir tarih için rezervasyon yapılamaz.";
+                TempData["ReservationError"] = "You cannot make a reservation for a past date.";
                 return RedirectToAction("Details", new { id = carId });
             }
 
@@ -134,7 +128,7 @@ namespace rent_a_car.Controllers
 
             if (hasOverlap)
             {
-                TempData["ReservationError"] = "Seçilen tarih aralığında bu araç dolu.";
+                TempData["ReservationError"] = "This car is not available for the selected dates.";
                 return RedirectToAction("Details", new { id = carId });
             }
 
@@ -152,7 +146,8 @@ namespace rent_a_car.Controllers
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            TempData["ReservationSuccess"] = $"{car.Model} için rezervasyonunuz oluşturuldu. Toplam: {reservation.TotalPrice:0.##}$ ({totalDays} gün)";
+            var dayLabel = totalDays == 1 ? "day" : "days";
+            TempData["ReservationSuccess"] = $"Your reservation for {car.Model} has been created. Total: ${reservation.TotalPrice:0.##} ({totalDays} {dayLabel})";
             return RedirectToAction("MyReservations");
         }
 
@@ -185,14 +180,14 @@ namespace rent_a_car.Controllers
 
             if (reservation.StartDate <= DateTime.Today)
             {
-                TempData["ReservationError"] = "Başlamış veya geçmiş bir rezervasyon iptal edilemez.";
+                TempData["ReservationError"] = "A reservation that has already started or passed cannot be cancelled.";
                 return RedirectToAction("MyReservations");
             }
 
             reservation.Status = ReservationStatus.Cancelled;
             await _context.SaveChangesAsync();
 
-            TempData["ReservationSuccess"] = "Rezervasyon iptal edildi.";
+            TempData["ReservationSuccess"] = "Reservation cancelled.";
             return RedirectToAction("MyReservations");
         }
     }

@@ -1,14 +1,14 @@
 @model List<rent_a_car.Models.Reservation>
 @{
-    ViewData["Title"] = "Rezervasyonlar";
+    ViewData["Title"] = "Reservations";
 }
 
 <div class="container mt-5">
-    <h2 class="mb-4 text-center fw-bold">Tüm Rezervasyonlar</h2>
+    <h2 class="mb-4 text-center fw-bold">All Reservations</h2>
 
     @if (!Model.Any())
     {
-        <p class="text-center text-muted">Henüz rezervasyon yok.</p>
+        <p class="text-center text-muted">No reservations yet.</p>
     }
     else
     {
@@ -17,13 +17,13 @@
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
-                        <th>Araç</th>
-                        <th>Kullanıcı</th>
-                        <th>Teslim Alma</th>
-                        <th>Bırakma</th>
-                        <th>Toplam</th>
-                        <th>Durum</th>
-                        <th>Oluşturulma</th>
+                        <th>Car</th>
+                        <th>User</th>
+                        <th>Pick-up</th>
+                        <th>Drop-off</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Created</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,11 +39,11 @@
                             <td>
                                 @if (r.Status == rent_a_car.Models.ReservationStatus.Confirmed)
                                 {
-                                    <span class="badge bg-success">Onaylandı</span>
+                                    <span class="badge bg-success">Confirmed</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">İptal Edildi</span>
+                                    <span class="badge bg-secondary">Cancelled</span>
                                 }
                             </td>
                             <td>@r.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
