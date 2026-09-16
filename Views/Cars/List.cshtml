@@ -4,8 +4,13 @@
     <div class="container">
         <h2 class="mb-4 text-center">Available Cars</h2>
 
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger text-center mb-4">@ViewBag.Error</div>
+        }
+
         @* Arama filtre bilgileri *@
-        @if (ViewBag.PickupDate != null || ViewBag.DropoffDate != null || ViewBag.SelectedCategory != null)
+        @if (ViewBag.Error == null && (ViewBag.PickupDate != null || ViewBag.DropoffDate != null || ViewBag.SelectedCategory != null))
         {
             <div class="alert alert-light text-center mb-4 border shadow-sm">
                 <strong>Search Filters:</strong>
@@ -24,7 +29,7 @@
             </div>
         }
 
-        @if (!Model.Any())
+        @if (!Model.Any() && ViewBag.Error == null)
         {
             <p class="text-center text-muted">No cars available at the moment.</p>
         }
@@ -41,10 +46,11 @@
                                 <h5 class="card-title">@car.Model</h5>
                                 <p class="text-muted mb-1"><strong>Category:</strong> @car.Category</p>
                                 <p class="card-text flex-grow-1">@car.Description</p>
-                                <p class="fw-bold fs-5 mt-2">$@car.PricePerDay/day</p>
+                                <p class="fw-bold fs-5 mt-2">$@car.PricePerDay.ToString("0.##")/day</p>
                             </div>
                             <div class="card-footer bg-transparent border-0 text-center">
                                 <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.Id"
+                                    asp-route-pickupDate="@ViewBag.PickupDate" asp-route-dropoffDate="@ViewBag.DropoffDate"
                                     class="btn btn-outline-primary w-100" style="cursor: pointer;">
                                     View Details
                                 </a>

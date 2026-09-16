@@ -13,6 +13,18 @@ namespace rent_a_car.Controllers
             _context = context;
         }
 
+        private int? CurrentUserId()
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            return int.TryParse(userIdStr, out var id) ? id : null;
+        }
+
+        // İki tarih aralığı çakışıyor mu? Check-out günü, aynı gün başka bir check-in'e izin verir.
+        private static bool RangesOverlap(DateTime existingStart, DateTime existingEnd, DateTime requestedStart, DateTime requestedEnd)
+        {
+            return existingStart < requestedEnd && existingEnd > requestedStart;
+        }
+
         public async Task<IActionResult> List(DateTime? pickupDate, DateTime? dropoffDate, string? category)
         {
             // Tarihler zorunlu
@@ -25,6 +37,15 @@ namespace rent_a_car.Controllers
                 return View(new List<Car>());
             }
 
+            if (dropoffDate.Value.Date <= pickupDate.Value.Date)
+            {
+                ViewBag.PickupDate = pickupDate?.ToString("yyyy-MM-dd");
+                ViewBag.DropoffDate = dropoffDate?.ToString("yyyy-MM-dd");
+                ViewBag.SelectedCategory = category;
+                ViewBag.Error = "Bırakma tarihi, teslim alma tarihinden sonra olmalıdır.";
+                return View(new List<Car>());
+            }
+
             var cars = await _context.Cars.ToListAsync();
 
             // Kategori filtrelemesi
@@ -33,7 +54,16 @@ namespace rent_a_car.Controllers
                 cars = cars.Where(c => c.Category.ToLower() == category.ToLower()).ToList();
             }
 
-            // İleride tarih kontrolü yapılacaksa burada yapılabilir
+            // Seçilen tarih aralığında rezerve edilmiş araçları listeden çıkar
+            var start = pickupDate.Value.Date;
+            var end = dropoffDate.Value.Date;
+            var overlappingCarIds = await _context.Reservations
+                .Where(r => r.Status == ReservationStatus.Confirmed && r.StartDate < end && r.EndDate > start)
+                .Select(r => r.CarId)
+                .Distinct()
+                .ToListAsync();
+
+            cars = cars.Where(c => !overlappingCarIds.Contains(c.Id)).ToList();
 
             ViewBag.PickupDate = pickupDate?.ToString("yyyy-MM-dd");
             ViewBag.DropoffDate = dropoffDate?.ToString("yyyy-MM-dd");
@@ -42,7 +72,7 @@ namespace rent_a_car.Controllers
             return View(cars);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, DateTime? pickupDate, DateTime? dropoffDate)
         {
             if (id == null)
                 return NotFound();
@@ -56,8 +86,114 @@ namespace rent_a_car.Controllers
                 .Take(4)
                 .ToListAsync();
 
+            var reservedRanges = await _context.Reservations
+                .Where(r => r.CarId == id && r.Status == ReservationStatus.Confirmed && r.EndDate >= DateTime.Today)
+                .Select(r => new { start = r.StartDate.ToString("yyyy-MM-dd"), end = r.EndDate.ToString("yyyy-MM-dd") })
+                .ToListAsync();
+
             ViewBag.SimilarCars = similarCars;
+            ViewBag.ReservedRanges = reservedRanges;
+            ViewBag.PickupDate = pickupDate?.ToString("yyyy-MM-dd");
+            ViewBag.DropoffDate = dropoffDate?.ToString("yyyy-MM-dd");
             return View(car);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reserve(int carId, DateTime pickupDate, DateTime dropoffDate)
+        {
+            var userId = CurrentUserId();
+            if (userId == null)
+            {
+                TempData["ReservationError"] = "Rezervasyon yapabilmek için giriş yapmalısınız.";
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Details", "Cars", new { id = carId }) });
+            }
+
+            var car = await _context.Cars.FindAsync(carId);
+            if (car == null)
+                return NotFound();
+
+            var start = pickupDate.Date;
+            var end = dropoffDate.Date;
+
+            if (end <= start)
+            {
+                TempData["ReservationError"] = "Bırakma tarihi, teslim alma tarihinden sonra olmalıdır.";
+                return RedirectToAction("Details", new { id = carId });
+            }
+            if (start < DateTime.Today)
+            {
+                TempData["ReservationError"] = "Geçmiş bir tarih için rezervasyon yapılamaz.";
+                return RedirectToAction("Details", new { id = carId });
+            }
+
+            var hasOverlap = await _context.Reservations.AnyAsync(r =>
+                r.CarId == carId &&
+                r.Status == ReservationStatus.Confirmed &&
+                r.StartDate < end && r.EndDate > start);
+
+            if (hasOverlap)
+            {
+                TempData["ReservationError"] = "Seçilen tarih aralığında bu araç dolu.";
+                return RedirectToAction("Details", new { id = carId });
+            }
+
+            var totalDays = Math.Max(1, (end - start).Days);
+            var reservation = new Reservation
+            {
+                CarId = carId,
+                UserId = userId.Value,
+                StartDate = start,
+                EndDate = end,
+                TotalPrice = totalDays * car.PricePerDay,
+                Status = ReservationStatus.Confirmed
+            };
+
+            _context.Reservations.Add(reservation);
+            await _context.SaveChangesAsync();
+
+            TempData["ReservationSuccess"] = $"{car.Model} için rezervasyonunuz oluşturuldu. Toplam: {reservation.TotalPrice:0.##}$ ({totalDays} gün)";
+            return RedirectToAction("MyReservations");
+        }
+
+        public async Task<IActionResult> MyReservations()
+        {
+            var userId = CurrentUserId();
+            if (userId == null)
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("MyReservations", "Cars") });
+
+            var reservations = await _context.Reservations
+                .Include(r => r.Car)
+                .Where(r => r.UserId == userId.Value)
+                .OrderByDescending(r => r.StartDate)
+                .ToListAsync();
+
+            return View(reservations);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelReservation(int id)
+        {
+            var userId = CurrentUserId();
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId.Value);
+            if (reservation == null)
+                return NotFound();
+
+            if (reservation.StartDate <= DateTime.Today)
+            {
+                TempData["ReservationError"] = "Başlamış veya geçmiş bir rezervasyon iptal edilemez.";
+                return RedirectToAction("MyReservations");
+            }
+
+            reservation.Status = ReservationStatus.Cancelled;
+            await _context.SaveChangesAsync();
+
+            TempData["ReservationSuccess"] = "Rezervasyon iptal edildi.";
+            return RedirectToAction("MyReservations");
         }
     }
 }
