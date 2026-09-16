@@ -121,7 +121,7 @@
                                     You need to <a id="signInLink" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Cars", new { id = Model.Id, pickupDate = ViewBag.PickupDate, dropoffDate = ViewBag.DropoffDate })">sign in</a> to make a reservation. Your selected dates will be kept.
                                 </div>
                             }
-                            <form asp-controller="Cars" asp-action="Reserve" method="post">
+                            <form asp-controller="Cars" asp-action="Checkout" method="post">
                                 <input type="hidden" name="carId" value="@Model.Id" />
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Pick-up</label>
@@ -137,7 +137,7 @@
                                     Total: <span id="totalPrice" class="fw-bold text-success">-</span>
                                 </div>
                                 <button type="submit" class="btn btn-success fw-bold w-100" @(isLoggedIn ? "" : "disabled")>
-                                    Confirm Reservation
+                                    <i class="fas fa-lock me-1"></i>Proceed to Payment
                                 </button>
                             </form>
                         </div>
