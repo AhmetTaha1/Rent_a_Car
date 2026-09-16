@@ -12,9 +12,32 @@ public class AdminController : Controller
     private readonly DataContext _context;
     private static ConcurrentDictionary<int, bool> AdminRemovedFlags = new();
 
+    private static readonly string[] AllowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+    private const long MaxImageSizeBytes = 5 * 1024 * 1024; // 5 MB
+
     public AdminController(DataContext context)
     {
         _context = context;
+    }
+
+    /// <summary>
+    /// Validates the uploaded image's extension and size before it ever touches disk.
+    /// </summary>
+    private bool IsValidImageUpload(IFormFile file, out string? error)
+    {
+        error = null;
+        var ext = System.IO.Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!AllowedImageExtensions.Contains(ext))
+        {
+            error = "Sadece jpg, jpeg, png, webp veya gif dosyaları yüklenebilir.";
+            return false;
+        }
+        if (file.Length > MaxImageSizeBytes)
+        {
+            error = "Görsel boyutu 5 MB'ı geçemez.";
+            return false;
+        }
+        return true;
     }
 
     private bool IsAdmin()
@@ -23,7 +46,7 @@ public class AdminController : Controller
         return HttpContext.Session.GetString("IsAdmin") == "true";
     }
 
-    private IActionResult AdminOnly()
+    private IActionResult? AdminOnly()
     {
         if (!IsAdmin())
             return RedirectToAction("Login", "Account");
@@ -60,6 +83,20 @@ public class AdminController : Controller
         var cars = await _context.Cars.ToListAsync();
         return View(cars);
         
+    }
+
+    // Tüm rezervasyonları listele
+    public async Task<IActionResult> ReservationList()
+    {
+        var result = AdminOnly();
+        if (result != null) return result;
+        if (CheckAndHandleAdminRemoved()) return RedirectToAction("Index", "Home");
+        var reservations = await _context.Reservations
+            .Include(r => r.Car)
+            .Include(r => r.User)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+        return View(reservations);
     }
 
     // Kullanıcıları listele
@@ -139,8 +176,17 @@ public class AdminController : Controller
         if (result != null) return result;
         if (CheckAndHandleAdminRemoved()) return RedirectToAction("Index", "Home");
 
+        // ImageUrl is derived from the uploaded file below, not bound directly from the form;
+        // clear any implicit "required" error so our specific validation message is the one shown.
+        ModelState.Remove(nameof(Car.ImageUrl));
+
         if (imageFile != null && imageFile.Length > 0)
         {
+            if (!IsValidImageUpload(imageFile, out var uploadError))
+            {
+                ModelState.AddModelError("ImageUrl", uploadError!);
+                return View(car);
+            }
             var fileName = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(imageFile.FileName);
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", fileName);
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -149,7 +195,7 @@ public class AdminController : Controller
             }
             car.ImageUrl = "/img/" + fileName;
         }
-        else if (string.IsNullOrEmpty(car.ImageUrl))
+        else
         {
             ModelState.AddModelError("ImageUrl", "Image is required.");
             return View(car);
@@ -188,9 +234,18 @@ public class AdminController : Controller
             return RedirectToAction("CarList");
         }
 
+        // updatedCar.ImageUrl is never posted from this form; clear its implicit "required" error
+        // so a real upload-validation message (if any) is the one displayed.
+        ModelState.Remove(nameof(Car.ImageUrl));
+
         // Fotoğraf değiştiyse yeni fotoğrafı kaydet
         if (imageFile != null && imageFile.Length > 0)
         {
+            if (!IsValidImageUpload(imageFile, out var uploadError))
+            {
+                ModelState.AddModelError("ImageUrl", uploadError!);
+                return View(car);
+            }
             var fileName = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(imageFile.FileName);
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", fileName);
             using (var stream = new FileStream(filePath, FileMode.Create))
