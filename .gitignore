@@ -1,0 +1,23 @@
+## .NET build artifacts
+bin/
+obj/
+*.user
+*.suo
+
+## SQLite database (local dev data, not source)
+*.db
+*.db-shm
+*.db-wal
+
+## IDE
+.vs/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log
