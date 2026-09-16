@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Checkout";
+    var car = (rent_a_car.Models.Car)ViewBag.Car;
+    var startDate = (DateTime)ViewBag.StartDate;
+    var endDate = (DateTime)ViewBag.EndDate;
+    var totalDays = (int)ViewBag.TotalDays;
+    var totalPrice = (decimal)ViewBag.TotalPrice;
+}
+
+<section class="py-5 bg-light min-vh-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <h2 class="fw-bold mb-4 text-center">Checkout</h2>
+                <div class="row g-4">
+                    <div class="col-md-5">
+                        <div class="bg-white rounded-4 shadow p-4">
+                            <h5 class="fw-bold mb-3">Order Summary</h5>
+                            <img src="@car.ImageUrl" class="img-fluid rounded-3 mb-3"
+                                style="height:160px; width:100%; object-fit:cover;" alt="@car.Model" />
+                            <p class="mb-1 fs-5"><strong>@car.Model</strong></p>
+                            <p class="text-muted mb-1">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                @startDate.ToString("yyyy-MM-dd") &rarr; @endDate.ToString("yyyy-MM-dd")
+                            </p>
+                            <p class="text-muted mb-3">
+                                @totalDays day@(totalDays == 1 ? "" : "s") &times; $@car.PricePerDay.ToString("0.##")/day
+                            </p>
+                            <hr />
+                            <p class="fs-4 fw-bold text-success mb-0">Total: $@totalPrice.ToString("0.##")</p>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.Id" class="text-muted">
+                                <i class="fas fa-arrow-left me-1"></i>Cancel and go back
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="bg-white rounded-4 shadow p-4">
+                            <h5 class="fw-bold mb-3">Payment</h5>
+                            <div id="iyzipay-checkout-form" class="responsive"></div>
+                            @Html.Raw(ViewBag.CheckoutFormContent)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
