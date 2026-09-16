@@ -161,7 +161,7 @@ public class AdminController : Controller
         int userId = int.Parse(userIdStr);
         if (AdminRemovedFlags.TryRemove(userId, out var removed) && removed)
         {
-            TempData["ShowAdminRemovedPopup"] = true;
+            TempData["SwalInfo"] = "You are no longer an admin. Your session has been ended.";
             HttpContext.Session.Clear();
             return true;
         }
@@ -281,17 +281,17 @@ public class AdminController : Controller
             var car = await _context.Cars.FindAsync(id);
             if (car == null)
             {
-                TempData["CarDeleteInfo"] = "Araç bulunamadı.";
+                TempData["SwalError"] = "Car not found.";
                 return RedirectToAction("CarList");
             }
             _context.Cars.Remove(car);
             await _context.SaveChangesAsync();
-            TempData["CarDeleteInfo"] = "Car deleted successfully.";
+            TempData["SwalSuccess"] = "Car deleted successfully.";
             return RedirectToAction("CarList");
         }
         catch (Exception ex)
         {
-            TempData["CarDeleteInfo"] = "Silme sırasında hata oluştu: " + ex.Message;
+            TempData["SwalError"] = "An error occurred while deleting: " + ex.Message;
             return RedirectToAction("CarList");
         }
     }

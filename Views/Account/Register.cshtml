@@ -2,15 +2,16 @@
     <div class="card shadow-sm p-4 log-card" style=" max-width: 450px; width: 100%;">
         <h3 class="text-center mb-4">Create Account</h3>
         <form method="post" asp-action="SignUp">
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
             <div class="mb-3">
                 <label for="fullName" class="form-label fw-semibold text-dark">Full Name</label>
                 <input type="text" class="form-control border border-secondary text-dark" id="fullName" name="FullName"
-                    placeholder="Your full name" required style="color: black;" />
+                    value="@ViewBag.FullName" placeholder="Your full name" required style="color: black;" />
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label fw-semibold text-dark">Email address</label>
                 <input type="email" class="form-control border border-secondary text-dark" id="email" name="Email"
-                    placeholder="name@example.com" required style="color: black;" />
+                    value="@ViewBag.Email" placeholder="name@example.com" required style="color: black;" />
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label fw-semibold text-dark">Password</label>
@@ -25,8 +26,8 @@
             <button type="submit" class="btn btn-primary w-100">Sign Up</button>
         </form>
         <div class="text-center mt-3">
-            <small class="text-dark">Already have an account? <a asp-controller="Account" asp-action="Login">Sign
-                    In</a></small>
+            <small class="text-dark">Already have an account? <a asp-controller="Account" asp-action="Login"
+                    asp-route-returnUrl="@ViewBag.ReturnUrl">Sign In</a></small>
         </div>
     </div>
 </div>

@@ -99,7 +99,7 @@ namespace rent_a_car.Controllers
             var userId = CurrentUserId();
             if (userId == null)
             {
-                TempData["ReservationError"] = "You must sign in to make a reservation.";
+                TempData["SwalError"] = "You must sign in to make a reservation.";
                 return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Details", "Cars", new { id = carId }) });
             }
 
@@ -112,12 +112,12 @@ namespace rent_a_car.Controllers
 
             if (end <= start)
             {
-                TempData["ReservationError"] = "The drop-off date must be after the pick-up date.";
+                TempData["SwalError"] = "The drop-off date must be after the pick-up date.";
                 return RedirectToAction("Details", new { id = carId });
             }
             if (start < DateTime.Today)
             {
-                TempData["ReservationError"] = "You cannot make a reservation for a past date.";
+                TempData["SwalError"] = "You cannot make a reservation for a past date.";
                 return RedirectToAction("Details", new { id = carId });
             }
 
@@ -128,7 +128,7 @@ namespace rent_a_car.Controllers
 
             if (hasOverlap)
             {
-                TempData["ReservationError"] = "This car is not available for the selected dates.";
+                TempData["SwalError"] = "This car is not available for the selected dates.";
                 return RedirectToAction("Details", new { id = carId });
             }
 
@@ -147,7 +147,7 @@ namespace rent_a_car.Controllers
             await _context.SaveChangesAsync();
 
             var dayLabel = totalDays == 1 ? "day" : "days";
-            TempData["ReservationSuccess"] = $"Your reservation for {car.Model} has been created. Total: ${reservation.TotalPrice:0.##} ({totalDays} {dayLabel})";
+            TempData["SwalSuccess"] = $"Your reservation for {car.Model} has been created. Total: ${reservation.TotalPrice:0.##} ({totalDays} {dayLabel})";
             return RedirectToAction("MyReservations");
         }
 
@@ -180,14 +180,14 @@ namespace rent_a_car.Controllers
 
             if (reservation.StartDate <= DateTime.Today)
             {
-                TempData["ReservationError"] = "A reservation that has already started or passed cannot be cancelled.";
+                TempData["SwalError"] = "A reservation that has already started or passed cannot be cancelled.";
                 return RedirectToAction("MyReservations");
             }
 
             reservation.Status = ReservationStatus.Cancelled;
             await _context.SaveChangesAsync();
 
-            TempData["ReservationSuccess"] = "Reservation cancelled.";
+            TempData["SwalSuccess"] = "Reservation cancelled.";
             return RedirectToAction("MyReservations");
         }
     }
