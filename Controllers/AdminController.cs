@@ -29,12 +29,12 @@ public class AdminController : Controller
         var ext = System.IO.Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!AllowedImageExtensions.Contains(ext))
         {
-            error = "Sadece jpg, jpeg, png, webp veya gif dosyaları yüklenebilir.";
+            error = "Only jpg, jpeg, png, webp, or gif files are allowed.";
             return false;
         }
         if (file.Length > MaxImageSizeBytes)
         {
-            error = "Görsel boyutu 5 MB'ı geçemez.";
+            error = "Image size must not exceed 5 MB.";
             return false;
         }
         return true;
@@ -85,7 +85,7 @@ public class AdminController : Controller
         
     }
 
-    // Tüm rezervasyonları listele
+    // List all reservations
     public async Task<IActionResult> ReservationList()
     {
         var result = AdminOnly();

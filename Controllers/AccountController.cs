@@ -74,12 +74,12 @@ public class AccountController : Controller
     {
         if (string.IsNullOrWhiteSpace(FullName) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
         {
-            ModelState.AddModelError("", "Tüm alanlar zorunludur.");
+            ModelState.AddModelError("", "All fields are required.");
             return View("Register");
         }
         if (Password.Length < 6)
         {
-            ModelState.AddModelError("", "Şifre en az 6 karakter olmalıdır.");
+            ModelState.AddModelError("", "Password must be at least 6 characters long.");
             return View("Register");
         }
         if (Password != ConfirmPassword)

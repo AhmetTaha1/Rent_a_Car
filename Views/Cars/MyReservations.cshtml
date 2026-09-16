@@ -1,11 +1,11 @@
 @model List<rent_a_car.Models.Reservation>
 @{
-    ViewData["Title"] = "Rezervasyonlarım";
+    ViewData["Title"] = "My Reservations";
 }
 
 <section class="py-5">
     <div class="container">
-        <h2 class="mb-4 text-center fw-bold">Rezervasyonlarım</h2>
+        <h2 class="mb-4 text-center fw-bold">My Reservations</h2>
 
         @if (TempData["ReservationSuccess"] != null)
         {
@@ -18,9 +18,9 @@
 
         @if (!Model.Any())
         {
-            <p class="text-center text-muted">Henüz bir rezervasyonunuz yok.</p>
+            <p class="text-center text-muted">You don't have any reservations yet.</p>
             <div class="text-center">
-                <a asp-controller="Cars" asp-action="List" class="btn btn-primary">Araçlara Göz At</a>
+                <a asp-controller="Cars" asp-action="List" class="btn btn-primary">Browse Cars</a>
             </div>
         }
         else
@@ -29,11 +29,11 @@
                 <table class="table table-bordered align-middle bg-white shadow-sm">
                     <thead class="table-light">
                         <tr>
-                            <th>Araç</th>
-                            <th>Teslim Alma</th>
-                            <th>Bırakma</th>
-                            <th>Toplam</th>
-                            <th>Durum</th>
+                            <th>Car</th>
+                            <th>Pick-up</th>
+                            <th>Drop-off</th>
+                            <th>Total</th>
+                            <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -50,19 +50,19 @@
                                 <td>
                                     @if (r.Status == rent_a_car.Models.ReservationStatus.Confirmed)
                                     {
-                                        <span class="badge bg-success">Onaylandı</span>
+                                        <span class="badge bg-success">Confirmed</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">İptal Edildi</span>
+                                        <span class="badge bg-secondary">Cancelled</span>
                                     }
                                 </td>
                                 <td>
                                     @if (r.Status == rent_a_car.Models.ReservationStatus.Confirmed && r.StartDate > DateTime.Today)
                                     {
                                         <form asp-controller="Cars" asp-action="CancelReservation" asp-route-id="@r.Id" method="post"
-                                            onsubmit="return confirm('Rezervasyonu iptal etmek istediğinize emin misiniz?');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">İptal Et</button>
+                                            onsubmit="return confirm('Are you sure you want to cancel this reservation?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                                         </form>
                                     }
                                 </td>
