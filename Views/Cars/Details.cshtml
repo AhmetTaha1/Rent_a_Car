@@ -118,7 +118,7 @@
                             @if (!isLoggedIn)
                             {
                                 <div class="alert alert-warning">
-                                    You need to <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Cars", new { id = Model.Id })">sign in</a> to make a reservation.
+                                    You need to <a id="signInLink" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Cars", new { id = Model.Id, pickupDate = ViewBag.PickupDate, dropoffDate = ViewBag.DropoffDate })">sign in</a> to make a reservation. Your selected dates will be kept.
                                 </div>
                             }
                             <form asp-controller="Cars" asp-action="Reserve" method="post">
@@ -317,6 +317,7 @@
             const pickupInput = document.getElementById('pickupInput');
             const dropoffInput = document.getElementById('dropoffInput');
             const totalPriceEl = document.getElementById('totalPrice');
+            const signInLink = document.getElementById('signInLink');
             const todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
 
             let startDate = pickupInput.value ? new Date(pickupInput.value + 'T00:00:00') : null;
@@ -347,10 +348,26 @@
                     const days = Math.round((endDate - startDate) / 86400000);
                     if (days > 0) {
                         totalPriceEl.textContent = '$' + (days * pricePerDay).toFixed(2) + ' (' + days + (days === 1 ? ' day)' : ' days)');
-                        return;
+                    } else {
+                        totalPriceEl.textContent = '-';
                     }
+                } else {
+                    totalPriceEl.textContent = '-';
                 }
-                totalPriceEl.textContent = '-';
+                updateSignInLink();
+            }
+            function updateSignInLink() {
+                // Keep the "sign in to book" link's returnUrl in sync with whatever dates are
+                // currently picked, so signing in (or signing up) mid-booking doesn't lose them -
+                // the calendar can be clicked well after the page first loaded with no dates at all.
+                if (!signInLink) return;
+                const detailsUrl = '@Url.Action("Details", "Cars", new { id = Model.Id })';
+                const params = new URLSearchParams();
+                if (startDate) params.set('pickupDate', toIso(startDate));
+                if (endDate) params.set('dropoffDate', toIso(endDate));
+                const query = params.toString();
+                const fullReturnUrl = query ? `${detailsUrl}?${query}` : detailsUrl;
+                signInLink.href = '@Url.Action("Login", "Account")' + '?returnUrl=' + encodeURIComponent(fullReturnUrl);
             }
             function renderCalendar(year, month) {
                 calendar.innerHTML = '';

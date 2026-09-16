@@ -94,13 +94,26 @@
             cursorChar: '|',
         });
 
-        // Form validation: Tarihler zorunlu
+        // Form validation: both dates are required
         document.getElementById('carSearchForm').addEventListener('submit', function(e) {
             var pickup = document.getElementById('pickupDate').value;
             var dropoff = document.getElementById('dropoffDate').value;
             if (!pickup || !dropoff) {
-                alert('Lütfen hem teslim alma hem de bırakma tarihi seçiniz.');
                 e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Please check your search',
+                    text: 'Please select both a pick-up and a drop-off date.',
+                    confirmButtonColor: '#ffc107'
+                });
+            } else if (dropoff <= pickup) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Please check your search',
+                    text: 'The drop-off date must be after the pick-up date.',
+                    confirmButtonColor: '#ffc107'
+                });
             }
         });
     </script>

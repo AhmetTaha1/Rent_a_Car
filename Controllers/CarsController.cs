@@ -100,7 +100,13 @@ namespace rent_a_car.Controllers
             if (userId == null)
             {
                 TempData["SwalError"] = "You must sign in to make a reservation.";
-                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Details", "Cars", new { id = carId }) });
+                var returnUrl = Url.Action("Details", "Cars", new
+                {
+                    id = carId,
+                    pickupDate = pickupDate.ToString("yyyy-MM-dd"),
+                    dropoffDate = dropoffDate.ToString("yyyy-MM-dd")
+                });
+                return RedirectToAction("Login", "Account", new { returnUrl });
             }
 
             var car = await _context.Cars.FindAsync(carId);
