@@ -10,10 +10,23 @@ namespace rent_a_car.Models
 
         public DbSet<Car> Cars { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.Car)
+                .WithMany()
+                .HasForeignKey(r => r.CarId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Car>().HasData(
                 new Car
@@ -23,7 +36,7 @@ namespace rent_a_car.Models
                     Category = "Economy",
                     Description = "Compact and fuel-efficient, perfect for city driving.",
                     ImageUrl = "/img/opel-corsa-54390.webp",
-                    PricePerDay = "35",
+                    PricePerDay = 35m,
                     FuelType = "Petrol",
                     Transmission = "Automatic",
                     Engine = "1.2L",
@@ -36,7 +49,7 @@ namespace rent_a_car.Models
                     Category = "Standard",
                     Description = "Reliable and comfortable sedan, great for daily use.",
                     ImageUrl = "/img/astra-54407.webp",
-                    PricePerDay = "45",
+                    PricePerDay = 45m,
                     FuelType = "Diesel",
                     Transmission = "Manual",
                     Engine = "1.5L",
@@ -49,7 +62,7 @@ namespace rent_a_car.Models
                     Category = "Luxury",
                     Description = "Powerful sports car with impressive performance and style.",
                     ImageUrl = "/img/mercedes-c-200-48693.webp",
-                    PricePerDay = "65",
+                    PricePerDay = 65m,
                     FuelType = "Petrol",
                     Transmission = "Automatic",
                     Engine = "2.0L",
@@ -62,7 +75,7 @@ namespace rent_a_car.Models
                     Category = "Luxury",
                     Description = "Powerful sports car with impressive performance and style.",
                     ImageUrl = "/img/320i-56645.webp",
-                    PricePerDay = "75",
+                    PricePerDay = 75m,
                     FuelType = "Diesel",
                     Transmission = "Automatic",
                     Engine = "2.0L",
@@ -75,7 +88,7 @@ namespace rent_a_car.Models
                     Category = "SUV",
                     Description = "Spacious and versatile SUV, perfect for family trips.",
                     ImageUrl = "/img/nwqash-64376.webp",
-                    PricePerDay = "55",
+                    PricePerDay = 55m,
                     FuelType = "Diesel",
                     Transmission = "Automatic",
                     Engine = "1.6L",
@@ -88,7 +101,7 @@ namespace rent_a_car.Models
                     Category = "SUV",
                     Description = "Compact crossover with excellent fuel economy.",
                     ImageUrl = "/img/bayon.webp",
-                    PricePerDay = "45",
+                    PricePerDay = 45m,
                     FuelType = "Petrol",
                     Transmission = "Manual",
                     Engine = "1.0L",
@@ -101,7 +114,7 @@ namespace rent_a_car.Models
                     Category = "Economy",
                     Description = "Stylish and agile hatchback, ideal for city driving.",
                     ImageUrl = "/img/clio2024-55893.webp",
-                    PricePerDay = "30",
+                    PricePerDay = 30m,
                     FuelType = "Petrol",
                     Transmission = "Manual",
                     Engine = "1.0L",
@@ -114,7 +127,7 @@ namespace rent_a_car.Models
                     Category = "Economy",
                     Description = "Efficient and affordable electric sedan with modern technology.",
                     ImageUrl = "/img/teslamodel3.webp",
-                    PricePerDay = "60",
+                    PricePerDay = 60m,
                     FuelType = "Electric",
                     Transmission = "Automatic",
                     Engine = "Electric",
@@ -127,7 +140,7 @@ namespace rent_a_car.Models
                     Category = "Standard",
                     Description = "Popular electric hatchback, perfect for city and daily use.",
                     ImageUrl = "/img/nissanleaf.webp",
-                    PricePerDay = "55",
+                    PricePerDay = 55m,
                     FuelType = "Electric",
                     Transmission = "Automatic",
                     Engine = "Electric",
@@ -140,7 +153,7 @@ namespace rent_a_car.Models
                     Category = "Luxury",
                     Description = "High-performance luxury electric sedan with cutting-edge features.",
                     ImageUrl = "/img/taycan.webp",
-                    PricePerDay = "120",
+                    PricePerDay = 120m,
                     FuelType = "Electric",
                     Transmission = "Automatic",
                     Engine = "Electric",
@@ -154,7 +167,7 @@ namespace rent_a_car.Models
                     Id = 1,
                     Username = "admin@site.com",
                     FullName = "Admin User",
-                    PasswordHash = "73l8gRjwLftklgfdXT+MdiMEjJwGPVMsyVxe16iYpk8=", // 'Admin123!' için gerçek SHA256 hash
+                    PasswordHash = "100000.+NGnHDwdkXxNBanGaNOGqA==.9gwtfQO5sYtd2jnQpVZkYQt2xZUsz3HJOn9njIRWEhM=", // PBKDF2 hash of 'Admin123!'
                     IsAdmin = true
                 }
             );

@@ -5,6 +5,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>rent_a_car</RootNamespace>
+    <!--
+      Force invariant culture everywhere. Without this, decimal model binding (e.g. Car.PricePerDay)
+      uses the server OS culture's number format. On a tr-TR machine that means '.' is treated as a
+      thousands separator, so posting "199.5" silently binds to 1995 instead of 199.5. Forms in this
+      app always submit '.'-decimal values (HTML number/text inputs), so invariant parsing is correct
+      regardless of where the app is deployed.
+    -->
+    <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>

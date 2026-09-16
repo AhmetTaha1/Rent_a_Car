@@ -1,0 +1,56 @@
+@model List<rent_a_car.Models.Reservation>
+@{
+    ViewData["Title"] = "Rezervasyonlar";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center fw-bold">Tüm Rezervasyonlar</h2>
+
+    @if (!Model.Any())
+    {
+        <p class="text-center text-muted">Henüz rezervasyon yok.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle bg-white shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Araç</th>
+                        <th>Kullanıcı</th>
+                        <th>Teslim Alma</th>
+                        <th>Bırakma</th>
+                        <th>Toplam</th>
+                        <th>Durum</th>
+                        <th>Oluşturulma</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td>@r.Id</td>
+                            <td>@(r.Car?.Model ?? "-")</td>
+                            <td>@(r.User?.FullName ?? "-") <span class="text-muted small">(@r.User?.Username)</span></td>
+                            <td>@r.StartDate.ToString("yyyy-MM-dd")</td>
+                            <td>@r.EndDate.ToString("yyyy-MM-dd")</td>
+                            <td>$@r.TotalPrice.ToString("0.##")</td>
+                            <td>
+                                @if (r.Status == rent_a_car.Models.ReservationStatus.Confirmed)
+                                {
+                                    <span class="badge bg-success">Onaylandı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">İptal Edildi</span>
+                                }
+                            </td>
+                            <td>@r.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

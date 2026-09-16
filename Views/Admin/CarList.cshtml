@@ -29,7 +29,7 @@
                                 <h5 class="card-title">@car.Model</h5>
                                 <p class="text-muted mb-1"><strong>Category:</strong> @car.Category</p>
                                 <p class="card-text flex-grow-1">@car.Description</p>
-                                <p class="fw-bold fs-5 mt-2">$@car.PricePerDay/day</p>
+                                <p class="fw-bold fs-5 mt-2">$@car.PricePerDay.ToString("0.##")/day</p>
                                 <p class="mb-1"><strong>Fuel:</strong> @car.FuelType</p>
                                 <p class="mb-1"><strong>Transmission:</strong> @car.Transmission</p>
                                 <p class="mb-1"><strong>Engine:</strong> @car.Engine</p>

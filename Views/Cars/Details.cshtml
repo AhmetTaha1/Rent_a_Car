@@ -2,25 +2,19 @@
 @{
     var similarCars = ViewBag.SimilarCars as List<rent_a_car.Models.Car>;
     var rating = 4.2;
-    var stock = true;
 
     var today = DateTime.Today;
     var selectedMonth = today.Month;
     var selectedYear = today.Year;
-
-    var months = Enumerable.Range(1, 12)
-    .Select(m => new DateTime(selectedYear, m, 1))
-    .ToList();
-
-    var reservedRanges = new List<(DateTime Start, DateTime End)>
-{
-(new DateTime(2025, 7, 3), new DateTime(2025, 7, 7)),
-(new DateTime(2025, 7, 15), new DateTime(2025, 7, 16))
-};
+    var isLoggedIn = Context.Session.GetString("UserId") != null;
 }
 
 <section class="py-5 bg-light min-vh-100">
     <div class="container">
+        @if (TempData["ReservationError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ReservationError"]</div>
+        }
         <!-- Car Details -->
         <div class="row justify-content-center mb-5">
             <div class="col-lg-10">
@@ -51,12 +45,7 @@
                             </span>
                             <span class="ms-2 text-dark fw-semibold">@rating.ToString("0.0")</span>
                         </div>
-                        <div class="mb-2">
-                            <span class="@(stock ? "text-success" : "text-danger") fw-semibold">
-                                @(stock ? "In Stock" : "Out of Stock")
-                            </span>
-                        </div>
-                        <div class="mb-3 fs-3 fw-bold text-success">$@Model.PricePerDay <span
+                        <div class="mb-3 fs-3 fw-bold text-success">$@Model.PricePerDay.ToString("0.##") <span
                                 class="fs-6 text-muted">/day</span></div>
                         <div class="mb-3">
                             <span class="badge bg-primary me-2">@Model.Category</span>
@@ -89,18 +78,65 @@
                                 <div class="fw-semibold">@(Model.Transmission ?? "Automatic")</div>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <a href="#" class="btn btn-success fw-bold shadow-sm" style="padding: 0.35rem 0.5rem; font-size: 1rem; border-radius: 0.5rem; width: 100vw; max-width: 100%;">View Price Offers</a>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Dropdown + Alert + Calendar side by side -->
+        <!-- Booking -->
         <div class="row justify-content-center mb-4">
-            <div class="col-12 col-lg-8">
-                <!-- KALDIRILDI: Card container -->
+            <div class="col-12 col-lg-10">
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="calendar-main-card rounded-4 p-4">
+                            <div class="calendar-card mx-0" style="max-width: 100%;">
+                                <div class="calendar-header w-100 mb-2">
+                                    <select id="monthSelect" class="form-select form-select-sm w-auto">
+                                        @foreach (var m in Enumerable.Range(1, 12))
+                                        {
+                                            <option value="@m" selected="@(m == selectedMonth)">@(new DateTime(selectedYear, m, 1).ToString("MMMM yyyy"))</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div id="calendar" class="calendar"></div>
+                                <div class="small text-muted mt-3">
+                                    <span class="d-inline-block me-3"><span class="legend-box reserved-day d-inline-block me-1"></span>Dolu</span>
+                                    <span class="d-inline-block"><span class="legend-box selected d-inline-block me-1"></span>Seçili</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="bg-white rounded-4 shadow p-4 h-100">
+                            <h4 class="fw-bold mb-3">Rezervasyon Yap</h4>
+                            @if (!isLoggedIn)
+                            {
+                                <div class="alert alert-warning">
+                                    Rezervasyon yapabilmek için <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Cars", new { id = Model.Id })">giriş yapmalısınız</a>.
+                                </div>
+                            }
+                            <form asp-controller="Cars" asp-action="Reserve" method="post">
+                                <input type="hidden" name="carId" value="@Model.Id" />
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Teslim Alma</label>
+                                    <input type="date" class="form-control" id="pickupInput" name="pickupDate"
+                                        value="@ViewBag.PickupDate" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Bırakma</label>
+                                    <input type="date" class="form-control" id="dropoffInput" name="dropoffDate"
+                                        value="@ViewBag.DropoffDate" required />
+                                </div>
+                                <div class="mb-3 fs-5">
+                                    Toplam: <span id="totalPrice" class="fw-bold text-success">-</span>
+                                </div>
+                                <button type="submit" class="btn btn-success fw-bold w-100" @(isLoggedIn ? "" : "disabled")>
+                                    Rezervasyonu Onayla
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -121,7 +157,7 @@
                                         <h5 class="card-title">@car.Model</h5>
                                         <p class="text-muted mb-1"><strong>Category:</strong> @car.Category</p>
                                         <p class="card-text flex-grow-1">@car.Description</p>
-                                        <p class="fw-bold fs-5 mt-2">$@car.PricePerDay/day</p>
+                                        <p class="fw-bold fs-5 mt-2">$@car.PricePerDay.ToString("0.##")/day</p>
                                     </div>
                                     <div class="card-footer bg-transparent border-0 text-center">
                                         <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.Id"
@@ -159,9 +195,7 @@
     .calendar-card {
         background: #fff;
         border-radius: 18px;
-        box-shadow: 0 4px 24px rgba(60,72,88,0.08);
-        padding: 24px 18px 18px 18px;
-        max-width: 370px;
+        padding: 0;
         margin: 0 auto;
         min-height: 340px;
         display: flex;
@@ -171,23 +205,8 @@
 
     .calendar {
         width: 100%;
-        max-width: 600px;
-        min-width: 340px;
         margin: 0 auto;
         user-select: none;
-    }
-
-    .calendar .calendar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-
-    .calendar .calendar-header span {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #198754;
     }
 
     .calendar .calendar-weekdays {
@@ -197,32 +216,29 @@
     }
 
     .calendar .calendar-weekdays div {
-        width: 48px;
-        min-width: 48px;
+        flex: 1;
         text-align: center;
         font-weight: 600;
         color: #6c757d;
-        font-size: 1rem;
-        letter-spacing: 0.2px;
+        font-size: 0.95rem;
     }
 
     .calendar-days {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        justify-content: flex-start;
+        gap: 6px;
     }
 
     .day-box {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+        width: calc(14.28% - 6px);
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
         background: #f4f6fa;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 500;
-        font-size: 1.08rem;
+        font-size: 0.95rem;
         color: #222;
         cursor: pointer;
         transition: background 0.18s, color 0.18s, box-shadow 0.18s;
@@ -231,7 +247,16 @@
         z-index: 1;
     }
 
-    .day-box:hover:not(.reserved-day):not(.selected):not(.in-range) {
+    .legend-box {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        vertical-align: middle;
+    }
+    .legend-box.reserved-day { background: repeating-linear-gradient(135deg, #f8d7da 0 5px, #f5c6cb 5px 10px); }
+    .legend-box.selected { background: linear-gradient(135deg, #198754 60%, #43c97f 100%); }
+
+    .day-box:hover:not(.reserved-day):not(.selected):not(.in-range):not(.empty-box):not(.past-day) {
         background: #e6f7ea;
         color: #198754;
         border-color: #b6e2c6;
@@ -242,6 +267,11 @@
         cursor: default;
         border: none;
         box-shadow: none;
+    }
+
+    .day-box.past-day {
+        color: #ccc;
+        cursor: not-allowed;
     }
 
     .day-box.reserved-day {
@@ -266,43 +296,51 @@
         border: 2px solid #b6e2c6;
         z-index: 1;
     }
-
-    @@media (max-width: 900px) {
-        .calendar, .calendar-days { max-width: 98vw; }
-        .day-box, .calendar .calendar-weekdays div { width: 36px; min-width: 36px; height: 36px; font-size: 0.9rem; }
-    }
 </style>
 
 @section Scripts {
     <script>
         (() => {
-            const allReservedRanges = [
-                { start: new Date(2025, 6, 3), end: new Date(2025, 6, 7) },
-                { start: new Date(2025, 6, 15), end: new Date(2025, 6, 16) }
-            ];
+            const pricePerDay = @Model.PricePerDay.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            const reservedRanges = @(Json.Serialize(ViewBag.ReservedRanges)).map(r => ({
+                start: new Date(r.start),
+                end: new Date(r.end)
+            }));
             const calendar = document.getElementById('calendar');
             const monthSelect = document.getElementById('monthSelect');
-            const calendarMonthLabel = document.getElementById('calendarMonthLabel');
-            let startDate = null;
-            let endDate = null;
+            const pickupInput = document.getElementById('pickupInput');
+            const dropoffInput = document.getElementById('dropoffInput');
+            const totalPriceEl = document.getElementById('totalPrice');
+            const todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
+
+            let startDate = pickupInput.value ? new Date(pickupInput.value + 'T00:00:00') : null;
+            let endDate = dropoffInput.value ? new Date(dropoffInput.value + 'T00:00:00') : null;
+
             function isDateReserved(date) {
-                return allReservedRanges.some(range => date >= range.start && date <= range.end);
+                return reservedRanges.some(range => date < range.end && addDays(date,1) > range.start);
             }
-            function clearSelection() {
-                startDate = null;
-                endDate = null;
-                document.querySelectorAll('.day-box.selected, .day-box.in-range').forEach(el => {
-                    el.classList.remove('selected', 'in-range');
-                });
+            function addDays(date, n) {
+                const d = new Date(date);
+                d.setDate(d.getDate() + n);
+                return d;
+            }
+            function toIso(date) {
+                return date.toISOString().split('T')[0];
+            }
+            function updateInputsAndTotal() {
+                pickupInput.value = startDate ? toIso(startDate) : '';
+                dropoffInput.value = endDate ? toIso(endDate) : '';
+                if (startDate && endDate) {
+                    const days = Math.round((endDate - startDate) / 86400000);
+                    if (days > 0) {
+                        totalPriceEl.textContent = '$' + (days * pricePerDay).toFixed(2) + ' (' + days + ' gün)';
+                        return;
+                    }
+                }
+                totalPriceEl.textContent = '-';
             }
             function renderCalendar(year, month) {
                 calendar.innerHTML = '';
-                // Header
-                const header = document.createElement('div');
-                header.className = 'calendar-header';
-                header.innerHTML = `<span>${new Date(year, month-1).toLocaleString('en-US', { month: 'long', year: 'numeric' })}</span>`;
-                calendar.appendChild(header);
-                // Weekdays
                 const weekdays = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'];
                 const weekdayRow = document.createElement('div');
                 weekdayRow.className = 'calendar-weekdays';
@@ -312,8 +350,8 @@
                     weekdayRow.appendChild(wdBox);
                 });
                 calendar.appendChild(weekdayRow);
-                // Days
-                const firstDay = new Date(year, month-1, 1);
+
+                const firstDay = new Date(year, month - 1, 1);
                 const daysInMonth = new Date(year, month, 0).getDate();
                 const emptyBoxesCount = firstDay.getDay();
                 const daysContainer = document.createElement('div');
@@ -324,37 +362,49 @@
                     daysContainer.appendChild(emptyBox);
                 }
                 for (let day = 1; day <= daysInMonth; day++) {
-                    const dayDate = new Date(year, month-1, day);
+                    const dayDate = new Date(year, month - 1, day);
                     const dayBox = document.createElement('div');
                     dayBox.className = 'day-box';
                     dayBox.textContent = day;
-                    dayBox.setAttribute('data-date', dayDate.toISOString().split('T')[0]);
-                    if (isDateReserved(dayDate)) {
+                    dayBox.setAttribute('data-date', toIso(dayDate));
+
+                    if (dayDate < todayMidnight) {
+                        dayBox.classList.add('past-day');
+                    } else if (isDateReserved(dayDate)) {
                         dayBox.classList.add('reserved-day');
-                        dayBox.style.cursor = 'not-allowed';
-                    }
-                    dayBox.addEventListener('click', () => {
-                        if (dayBox.classList.contains('reserved-day')) return;
-                        if (startDate && !endDate) {
-                            if (dayDate < startDate) {
+                    } else {
+                        dayBox.addEventListener('click', () => {
+                            if (startDate && !endDate) {
+                                if (dayDate.getTime() <= startDate.getTime()) {
+                                    startDate = dayDate;
+                                    endDate = null;
+                                } else if (hasReservedBetween(startDate, dayDate)) {
+                                    // Aralıkta dolu gün varsa yeniden başlat
+                                    startDate = dayDate;
+                                    endDate = null;
+                                } else {
+                                    endDate = dayDate;
+                                }
+                            } else {
                                 startDate = dayDate;
                                 endDate = null;
-                            } else if (dayDate.getTime() === startDate.getTime()) {
-                                clearSelection();
-                                return;
-                            } else {
-                                endDate = dayDate;
                             }
-                        } else {
-                            startDate = dayDate;
-                            endDate = null;
-                        }
-                        updateSelection();
-                    });
+                            updateInputsAndTotal();
+                            updateSelection();
+                        });
+                    }
                     daysContainer.appendChild(dayBox);
                 }
                 calendar.appendChild(daysContainer);
                 updateSelection();
+            }
+            function hasReservedBetween(start, end) {
+                let d = addDays(start, 1);
+                while (d < end) {
+                    if (isDateReserved(d)) return true;
+                    d = addDays(d, 1);
+                }
+                return false;
             }
             function updateSelection() {
                 document.querySelectorAll('.day-box.selected, .day-box.in-range').forEach(el => {
@@ -363,7 +413,7 @@
                 if (!startDate) return;
                 const dayBoxes = document.querySelectorAll('.day-box[data-date]');
                 dayBoxes.forEach(box => {
-                    const boxDate = new Date(box.getAttribute('data-date'));
+                    const boxDate = new Date(box.getAttribute('data-date') + 'T00:00:00');
                     if (boxDate.getTime() === startDate.getTime()) {
                         box.classList.add('selected');
                     } else if (endDate && boxDate > startDate && boxDate < endDate) {
@@ -374,12 +424,19 @@
                 });
             }
             renderCalendar(@selectedYear, @selectedMonth);
+            updateInputsAndTotal();
             monthSelect.addEventListener('change', (e) => {
                 const newMonth = parseInt(e.target.value);
                 renderCalendar(@selectedYear, newMonth);
             });
+            [pickupInput, dropoffInput].forEach(input => {
+                input.addEventListener('change', () => {
+                    startDate = pickupInput.value ? new Date(pickupInput.value + 'T00:00:00') : null;
+                    endDate = dropoffInput.value ? new Date(dropoffInput.value + 'T00:00:00') : null;
+                    updateInputsAndTotal();
+                    updateSelection();
+                });
+            });
         })();
     </script>
 }
-
-

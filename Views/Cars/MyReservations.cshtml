@@ -1,0 +1,76 @@
+@model List<rent_a_car.Models.Reservation>
+@{
+    ViewData["Title"] = "Rezervasyonlarım";
+}
+
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4 text-center fw-bold">Rezervasyonlarım</h2>
+
+        @if (TempData["ReservationSuccess"] != null)
+        {
+            <div class="alert alert-success text-center">@TempData["ReservationSuccess"]</div>
+        }
+        @if (TempData["ReservationError"] != null)
+        {
+            <div class="alert alert-danger text-center">@TempData["ReservationError"]</div>
+        }
+
+        @if (!Model.Any())
+        {
+            <p class="text-center text-muted">Henüz bir rezervasyonunuz yok.</p>
+            <div class="text-center">
+                <a asp-controller="Cars" asp-action="List" class="btn btn-primary">Araçlara Göz At</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle bg-white shadow-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Araç</th>
+                            <th>Teslim Alma</th>
+                            <th>Bırakma</th>
+                            <th>Toplam</th>
+                            <th>Durum</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-controller="Cars" asp-action="Details" asp-route-id="@r.CarId">@(r.Car?.Model ?? "-")</a>
+                                </td>
+                                <td>@r.StartDate.ToString("yyyy-MM-dd")</td>
+                                <td>@r.EndDate.ToString("yyyy-MM-dd")</td>
+                                <td>$@r.TotalPrice.ToString("0.##")</td>
+                                <td>
+                                    @if (r.Status == rent_a_car.Models.ReservationStatus.Confirmed)
+                                    {
+                                        <span class="badge bg-success">Onaylandı</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">İptal Edildi</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (r.Status == rent_a_car.Models.ReservationStatus.Confirmed && r.StartDate > DateTime.Today)
+                                    {
+                                        <form asp-controller="Cars" asp-action="CancelReservation" asp-route-id="@r.Id" method="post"
+                                            onsubmit="return confirm('Rezervasyonu iptal etmek istediğinize emin misiniz?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">İptal Et</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

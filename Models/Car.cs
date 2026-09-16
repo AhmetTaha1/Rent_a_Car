@@ -7,7 +7,7 @@ public class Car
     public string Category { get; set; } = null!;
     public string? Description { get; set; }
     public string ImageUrl { get; set; } = null!;
-    public string PricePerDay { get; set; } = null!;
+    public decimal PricePerDay { get; set; }
     public string? Transmission { get; set; }
     public string? Engine { get; set; }
     public string? FuelType { get; set; }
