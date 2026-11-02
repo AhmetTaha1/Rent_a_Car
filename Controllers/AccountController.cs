@@ -3,6 +3,7 @@ using rent_a_car.Models;
 using rent_a_car.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace rent_a_car.Controllers;
 
@@ -23,6 +24,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> SignIn(string? returnUrl)
     {
         ViewBag.ReturnUrl = returnUrl;
@@ -36,14 +38,12 @@ public class AccountController : Controller
         }
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == email);
-        if (user == null)
+        // Same message whether the email or the password was wrong, so the login form can't be
+        // used to find out which email addresses have an account.
+        var needsUpgrade = false;
+        if (user == null || !PasswordHasher.Verify(password, user.PasswordHash, out needsUpgrade))
         {
-            ModelState.AddModelError("", "User not found.");
-            return View("Login");
-        }
-        if (!PasswordHasher.Verify(password, user.PasswordHash, out var needsUpgrade))
-        {
-            ModelState.AddModelError("", "Incorrect password.");
+            ModelState.AddModelError("", "Invalid email or password.");
             return View("Login");
         }
         if (needsUpgrade)
@@ -52,7 +52,7 @@ public class AccountController : Controller
             user.PasswordHash = PasswordHasher.Hash(password);
             await _context.SaveChangesAsync();
         }
-        // Oturum aç
+        // Sign the user in
         HttpContext.Session.SetString("UserId", user.Id.ToString());
         HttpContext.Session.SetString("FullName", user.FullName);
         HttpContext.Session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
@@ -72,6 +72,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> SignUp(string FullName, string Email, string Password, string ConfirmPassword, string? returnUrl)
     {
         // Echo back whatever was entered (never the passwords) so a failed attempt doesn't
@@ -110,7 +111,7 @@ public class AccountController : Controller
         };
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
-        // Oturum aç
+        // Sign the user in
         HttpContext.Session.SetString("UserId", user.Id.ToString());
         HttpContext.Session.SetString("FullName", user.FullName);
         HttpContext.Session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
@@ -122,6 +123,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();

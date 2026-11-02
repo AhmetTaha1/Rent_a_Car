@@ -16,17 +16,19 @@ namespace rent_a_car.Models
         {
             base.OnModelCreating(modelBuilder);
 
+            // Restrict, not Cascade: reservations are paid records, so deleting a car or user
+            // must never silently delete the bookings (and payment references) attached to them.
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Car)
                 .WithMany()
                 .HasForeignKey(r => r.CarId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.User)
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Car>().HasData(
                 new Car

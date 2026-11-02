@@ -9,16 +9,19 @@ A full-stack car rental web application built with ASP.NET Core MVC (.NET 9). Vi
 - Car detail page with an interactive calendar showing real booked/available dates.
 - Checkout flow backed by [iyzico](https://www.iyzico.com/)'s hosted Checkout Form — card details are handled entirely by iyzico, never touching this app's server.
 - A reservation is only created after the payment is verified server-to-server; if two customers race for the same dates, the later payment is automatically refunded instead of double-booking the car.
-- "My Reservations" page for signed-in users, with the ability to cancel upcoming (unstarted) bookings.
+- "My Reservations" page for signed-in users, with the ability to cancel upcoming (unstarted) bookings. Cancelling refunds the payment through iyzico first; if the refund fails, the booking is left intact instead of being cancelled without a refund.
+- Reservations are protected records: a car that has bookings on record can't be deleted, so payment history is never silently lost.
 
 **Accounts**
 - Registration and login with PBKDF2 (salted, 100k-iteration) password hashing.
 - Session-based authentication with hardened cookies (HttpOnly, SameSite, idle timeout).
+- Sign-in and sign-up are rate-limited per IP, and failed logins return the same message whether the email or the password was wrong (no account enumeration).
+- All state-changing actions are protected against CSRF with anti-forgery tokens.
 - Sign-in/sign-up preserves the page (and any dates already picked) a visitor was on, so booking mid-flow doesn't lose progress.
 
 **Admin panel**
 - Manage the car catalog (add/edit/delete, with image upload validated by file type and size).
-- Manage users and admin privileges.
+- Manage users and admin privileges. Admin rights are re-checked against the database on every admin request, so revoking them takes effect immediately.
 - View every reservation across all customers.
 
 **General**
@@ -58,6 +61,8 @@ The app will be available at the URL printed in the console (e.g. `http://localh
 |---|---|
 | `admin@site.com` | `Admin123!` |
 
+> ⚠️ These credentials are seeded for local development only. Change the admin password before deploying the app anywhere reachable from the internet.
+
 ### Configuring payments (iyzico)
 
 `appsettings.json` ships with placeholder sandbox credentials, so checkout will show a clear "payment could not be started" message until real ones are added. To enable it:
@@ -70,7 +75,7 @@ The app will be available at the URL printed in the console (e.g. `http://localh
   "ApiKey": "sandbox-...",
   "SecretKey": "sandbox-...",
   "BaseUrl": "https://sandbox-api.iyzipay.com",
-  "Currency": "TRY"
+  "Currency": "USD"
 }
 ```
 
@@ -84,11 +89,13 @@ Models/         EF Core entities (Car, User, Reservation) + DbContext
 Services/       PasswordHasher (PBKDF2)
 Views/          Razor views, organized by controller
 Migrations/     EF Core migrations
-wwwroot/        Static assets (css, js, images)
+wwwroot/        Static assets (css, js, images); admin-uploaded car photos go to wwwroot/uploads/ (git-ignored)
 ```
 
 ## Known Limitations
 
 - Payments require a real iyzico sandbox (or production) account to actually process a card — see above.
 - No automated test suite yet.
+- Pending checkouts (between opening the iyzico form and the payment callback) are held in memory, so a restart during a customer's checkout drops it, and the app is designed to run as a single instance.
+- If an automatic refund is rejected by iyzico, it is logged for manual follow-up; there's no admin screen for reconciling those yet.
 - Buyer info sent to iyzico (identity number, address) uses sandbox-only placeholder values since the app doesn't collect that data from users today; a production launch would need a proper checkout form for it.

@@ -18,13 +18,62 @@ namespace rent_a_car.Controllers
         // Kept in memory (not the database) because it's only needed for the few seconds/minutes
         // between "redirected to iyzico's hosted card form" and "iyzico calls us back with the
         // result" - nothing worth persisting if the process restarts mid-checkout.
-        private record PendingBooking(int CarId, int UserId, DateTime StartDate, DateTime EndDate, decimal TotalPrice);
+        private record PendingBooking(int CarId, int UserId, DateTime StartDate, DateTime EndDate, decimal TotalPrice, DateTime CreatedAt);
         private static readonly ConcurrentDictionary<string, PendingBooking> PendingBookings = new();
 
-        public CarsController(DataContext context, IConfiguration config)
+        // Checkouts the customer abandoned (closed the tab, never paid) are dropped after this long
+        // so the in-memory map can't grow forever.
+        private static readonly TimeSpan PendingBookingLifetime = TimeSpan.FromHours(1);
+
+        private readonly ILogger<CarsController> _logger;
+
+        public CarsController(DataContext context, IConfiguration config, ILogger<CarsController> logger)
         {
             _context = context;
             _config = config;
+            _logger = logger;
+        }
+
+        private static void PruneExpiredPendingBookings()
+        {
+            var cutoff = DateTime.UtcNow - PendingBookingLifetime;
+            foreach (var entry in PendingBookings)
+            {
+                if (entry.Value.CreatedAt < cutoff)
+                    PendingBookings.TryRemove(entry.Key, out _);
+            }
+        }
+
+        /// <summary>
+        /// Refunds a completed iyzico payment in full. Returns false (and logs why) if iyzico
+        /// rejects the refund or can't be reached, so callers never tell a customer they've been
+        /// refunded when they haven't.
+        /// </summary>
+        private async Task<bool> TryRefund(string paymentTransactionId, decimal amount, string? currency)
+        {
+            try
+            {
+                var refund = await Refund.Create(new CreateRefundRequest
+                {
+                    ConversationId = Guid.NewGuid().ToString("N"),
+                    PaymentTransactionId = paymentTransactionId,
+                    Price = amount.ToString(CultureInfo.InvariantCulture),
+                    Currency = currency ?? _config["Iyzico:Currency"] ?? Currency.TRY.ToString(),
+                    Ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1"
+                }, GetIyzicoOptions());
+
+                if (refund.Status == "success")
+                    return true;
+
+                _logger.LogError("iyzico refund rejected for transaction {TransactionId}: {Error}",
+                    paymentTransactionId, refund.ErrorMessage);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "iyzico refund failed for transaction {TransactionId}", paymentTransactionId);
+                return false;
+            }
         }
 
         private int? CurrentUserId()
@@ -170,8 +219,9 @@ namespace rent_a_car.Controllers
             var totalPrice = totalDays * car.PricePerDay;
             var priceString = totalPrice.ToString(CultureInfo.InvariantCulture);
 
+            PruneExpiredPendingBookings();
             var conversationId = Guid.NewGuid().ToString("N");
-            PendingBookings[conversationId] = new PendingBooking(carId, userId.Value, start, end, totalPrice);
+            PendingBookings[conversationId] = new PendingBooking(carId, userId.Value, start, end, totalPrice, DateTime.UtcNow);
 
             // iyzico requires a first/last name split and a fair amount of buyer/address detail
             // even in sandbox. We don't collect most of this from users today, so real values
@@ -244,7 +294,8 @@ namespace rent_a_car.Controllers
             catch (Exception ex)
             {
                 PendingBookings.TryRemove(conversationId, out _);
-                TempData["SwalError"] = "Payment could not be started: " + ex.Message;
+                _logger.LogError(ex, "iyzico checkout form initialization failed");
+                TempData["SwalError"] = "Payment could not be started. Please try again later.";
                 return RedirectToAction("Details", new { id = carId });
             }
 
@@ -284,6 +335,8 @@ namespace rent_a_car.Controllers
                 if (checkoutForm.Status == "success" && checkoutForm.PaymentStatus == "SUCCESS"
                     && conversationId != null && PendingBookings.TryRemove(conversationId, out var pending))
                 {
+                    var transactionId = checkoutForm.PaymentItems?.FirstOrDefault()?.PaymentTransactionId;
+
                     // Time has passed while the customer was entering card details - re-check
                     // that nobody else grabbed these dates in the meantime before honoring it.
                     var stillAvailable = !await _context.Reservations.AnyAsync(r =>
@@ -300,7 +353,9 @@ namespace rent_a_car.Controllers
                             StartDate = pending.StartDate,
                             EndDate = pending.EndDate,
                             TotalPrice = pending.TotalPrice,
-                            Status = ReservationStatus.Confirmed
+                            Status = ReservationStatus.Confirmed,
+                            PaymentId = checkoutForm.PaymentId,
+                            PaymentTransactionId = transactionId
                         });
                         await _context.SaveChangesAsync();
 
@@ -311,26 +366,20 @@ namespace rent_a_car.Controllers
                     {
                         // Charged them but can't honor the booking - refund immediately rather
                         // than leaving a customer paid with nothing to show for it.
-                        var transactionId = checkoutForm.PaymentItems?.FirstOrDefault()?.PaymentTransactionId;
-                        if (!string.IsNullOrEmpty(transactionId))
+                        var refunded = !string.IsNullOrEmpty(transactionId)
+                            && await TryRefund(transactionId, pending.TotalPrice, checkoutForm.Currency);
+
+                        if (refunded)
                         {
-                            try
-                            {
-                                await Refund.Create(new CreateRefundRequest
-                                {
-                                    PaymentTransactionId = transactionId,
-                                    Price = pending.TotalPrice.ToString(CultureInfo.InvariantCulture),
-                                    Currency = checkoutForm.Currency ?? "TRY",
-                                    Ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1"
-                                }, GetIyzicoOptions());
-                            }
-                            catch
-                            {
-                                // If the refund call itself fails, this needs manual reconciliation -
-                                // out of scope for this project, but flagged here rather than hidden.
-                            }
+                            TempData["SwalError"] = "This car was booked by someone else while your payment was processing. You have been refunded.";
                         }
-                        TempData["SwalError"] = "This car was booked by someone else while your payment was processing. You have been refunded.";
+                        else
+                        {
+                            _logger.LogCritical("Payment {PaymentId} could not be honored or refunded automatically; manual refund required",
+                                checkoutForm.PaymentId);
+                            TempData["SwalError"] = "This car was booked by someone else while your payment was processing. " +
+                                "We couldn't refund you automatically - our team has been notified and will refund you manually.";
+                        }
                         redirectUrl = Url.Action("Details", "Cars", new { id = pending.CarId })!;
                     }
                 }
@@ -344,7 +393,8 @@ namespace rent_a_car.Controllers
             }
             catch (Exception ex)
             {
-                TempData["SwalError"] = "Payment verification failed: " + ex.Message;
+                _logger.LogError(ex, "iyzico payment verification failed");
+                TempData["SwalError"] = "Payment verification failed. If you were charged, please contact us.";
                 redirectUrl = Url.Action("List", "Cars")!;
             }
 
@@ -390,10 +440,27 @@ namespace rent_a_car.Controllers
                 return RedirectToAction("MyReservations");
             }
 
+            if (reservation.Status != ReservationStatus.Confirmed)
+                return RedirectToAction("MyReservations");
+
+            // Refund first, cancel second: if the refund fails the booking stays intact, so the
+            // customer never ends up with neither their money nor their car.
+            if (!string.IsNullOrEmpty(reservation.PaymentTransactionId))
+            {
+                if (!await TryRefund(reservation.PaymentTransactionId, reservation.TotalPrice, null))
+                {
+                    TempData["SwalError"] = "Your refund could not be processed, so the reservation was not cancelled. Please try again later.";
+                    return RedirectToAction("MyReservations");
+                }
+                reservation.RefundedAt = DateTime.UtcNow;
+            }
+
             reservation.Status = ReservationStatus.Cancelled;
             await _context.SaveChangesAsync();
 
-            TempData["SwalSuccess"] = "Reservation cancelled.";
+            TempData["SwalSuccess"] = reservation.RefundedAt != null
+                ? $"Reservation cancelled. ${reservation.TotalPrice:0.##} has been refunded to your card."
+                : "Reservation cancelled.";
             return RedirectToAction("MyReservations");
         }
     }

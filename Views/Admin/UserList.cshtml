@@ -1,9 +1,9 @@
 @model List<rent_a_car.Models.User>
 @{
-    ViewData["Title"] = "Kullanıcı Listesi";
+    ViewData["Title"] = "Users";
 }
 <div class="container mt-5">
-    <h2>Kullanıcılar</h2>
+    <h2>Users</h2>
     <table class="table table-bordered table-striped mt-3">
         <thead>
             <tr>
@@ -23,11 +23,15 @@
                     <td>@user.Username</td>
                     <td>@(user.IsAdmin ? "Yes" : "No")</td>
                     <td>
-                        @if (!user.IsAdmin)
+                        @if (!user.IsAdmin && Context.Session.GetString("UserId") != "1")
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                        else if (!user.IsAdmin)
                         {
                             <form asp-action="MakeAdmin" method="post" style="display:inline;">
                                 <input type="hidden" name="id" value="@user.Id" />
-                                <button type="submit" class="btn btn-sm btn-success">Make Admin </button>
+                                <button type="submit" class="btn btn-sm btn-success">Make Admin</button>
                             </form>
                         }
                         else
@@ -42,7 +46,7 @@
                                 {
                                     <form asp-action="RemoveAdmin" method="post" style="display:inline;">
                                         <input type="hidden" name="id" value="@user.Id" />
-                                        <button type="submit" class="btn btn-sm btn-danger">Adminlikten Çıkar</button>
+                                        <button type="submit" class="btn btn-sm btn-danger">Remove Admin</button>
                                     </form>
                                 }
                                 else

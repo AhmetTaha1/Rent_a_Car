@@ -28,5 +28,14 @@ namespace rent_a_car.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ReservationStatus Status { get; set; } = ReservationStatus.Confirmed;
+
+        // iyzico identifiers for the payment behind this reservation, needed to refund it on cancellation.
+        [MaxLength(64)]
+        public string? PaymentId { get; set; }
+
+        [MaxLength(64)]
+        public string? PaymentTransactionId { get; set; }
+
+        public DateTime? RefundedAt { get; set; }
     }
 }
